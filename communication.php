@@ -125,7 +125,6 @@ function authenticateUser($email, $pswd) {
     }
 
     if ($row["pswd"] == $pswd) {
-        echo $row["email"];
         return true;
     }
     return false;
