@@ -1,0 +1,81 @@
+body {
+    width: 800px;
+    margin: auto;
+    background-color: white;
+}
+
+h1 {
+    font-size: 48px;
+    text-align: center;
+    font-family: Merriweather, serif;
+}
+
+h2 {
+    font-family: Merriweather, serif;
+}
+
+ul.navbar {
+    list-style-type: none;
+    background-color: rgb(106, 187, 213);
+    overflow: hidden;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+ul.navbar li > a {
+    border-style: solid;
+    border-width: 2px;
+    border-color: lightgreen;
+    color: white;
+    padding: 0px 8px;
+    text-decoration: none;
+}
+
+.content {
+    color: grey;
+    font-size: 12px;
+    font-family: "Open Sans", sans-serif;
+}
+
+.content a, .content a:visited {
+    color: inherit;
+}
+
+.error {
+    color: red;
+}
+
+footer {
+    background-color: black;
+    color: white;
+    font-size: 10px;
+    float: right;
+}
+
+form {
+    font-family:  "Open Sans", sans-serif;
+}
+
+input, select, textarea { 
+    width: 400px; 
+    display: inline-block;
+} 
+
+input[type=radio], .radio, input[type=submit] { 
+    width: auto; 
+}
+
+label {
+    width: 200px;
+    display: inline-block;
+}
+
+
+textarea {
+    vertical-align: top;
+}
+
+#profiel-foto {
+    width: 150px;
+    height: 200px;
+}

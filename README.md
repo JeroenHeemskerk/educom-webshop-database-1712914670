@@ -1,6 +1,5 @@
 # Using databases for a Webshop
 
-VOOR FLORIAN
 Databases worden veel gebruikt bij het interactief maken van websites. We gaan hier werken met MySQL, maar de taal SQL die we leren is ook te gebruiken in vele andere databases.
 
 ## Module
