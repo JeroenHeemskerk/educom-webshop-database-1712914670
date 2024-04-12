@@ -1,63 +1,169 @@
 <?php 
 
+// dit voelt niet goed, 
+// $servername = "localhost";
+// $username = "florians_webshop_user";
+// $password = "_9Cq>&djZFE>g5i";
+// $dbname = "florians_webshop";
+
+// // Create connection
+
+// try {
+//     $conn = mysqli_connect($servername, $username, $password, $dbname);
+// }
+// catch (Exception $e) {
+//     echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
+//     exit();
+// }
+
+// $sql = "SELECT * FROM users;";
+
+// try {
+//     $result = mysqli_query($conn, $sql);
+// }
+// catch (Exception $e) {
+//     echo 'MySQL select error: ' . $e->getMessage() . PHP_EOL;
+// }
+
+// if (mysqli_num_rows($result) > 0) {
+//     // output data of each row
+//     while($row = mysqli_fetch_assoc($result)) {
+//       echo "id: " . $row["id"]. " - Email: " . $row["email"] . " with username: " . $row["user"] . " and Password: " . $row["pswd"] . "<br>";
+//     }
+//   } else {
+//     echo "0 results";
+//   }
+// mysqli_close($conn);
+
+
 function addAccount($credentials) {
-    // TODO: wat is "or" keyword
-    $users = fopen("users.txt", "a") or die("Unable to open file!");
-    
-    $registration = [$credentials["email"], $credentials["username"] , $credentials["pswd"]];
-    fwrite($users, implode("|", $registration) . PHP_EOL);
-    fclose($users);
+    // dit voelt niet goed
+    $servername = "localhost";
+    $username = "florians_webshop_user";
+    $password = "_9Cq>&djZFE>g5i";
+    $dbname = "florians_webshop";
+
+    try {
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
+    }
+    catch (Exception $e) {
+        echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
+        exit();
+    }
+
+    $query = "INSERT INTO users (email, user, pswd) VALUES ('" . $credentials["email"] . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";
+
+    try {
+        mysqli_query($conn, $query);
+    }
+    catch (Exception $e) {
+        echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
+        exit();
+    }
 }
 
 function doesEmailExist($email) {
-    // TODO: wat is "or" keyword
-    $users = fopen("users.txt", "r") or die("Unable to open file!");
+    // dit voelt niet goed
+    $servername = "localhost";
+    $username = "florians_webshop_user";
+    $password = "_9Cq>&djZFE>g5i";
+    $dbname = "florians_webshop";
 
-    while (!feof($users)) {
-        $current_credentials = explode("|", fgets($users));
-        $current_email = $current_credentials[0];
-        if ($current_email == $email) {
-            return true;
-        }
+    try {
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
     }
-    fclose($users);
-    return false;
+    catch (Exception $e) {
+        echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
+        exit();
+    }
+
+    $query = "SELECT email FROM users WHERE email='" . $email . "';";
+
+    try {
+        $result = mysqli_query($conn, $query);
+    }
+    catch (Exception $e) {
+        echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
+        exit();
+    }
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row == NULL) {
+        return false;
+    }
+
+    return true;
 }
 
 function authenticateUser($email, $pswd) {
-    $users = fopen('users.txt', "r") or die("Unable to open file!");
+    // dit voelt niet goed
+    $servername = "localhost";
+    $username = "florians_webshop_user";
+    $password = "_9Cq>&djZFE>g5i";
+    $dbname = "florians_webshop";
 
-    while (($line = fgets($users)) !== false) {
-        // Skip empty lines
-        if (trim($line) == '') {
-            continue;
-        }
-
-        $current_credentials = explode("|", $line);
-        $current_email = $current_credentials[0];
-        $current_pswd = $current_credentials[2];
-
-        if ($current_email == $email && $current_pswd == $pswd . PHP_EOL) {
-            return true;
-        }
+    try {
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
     }
-    
-    fclose($users);
+    catch (Exception $e) {
+        echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
+        exit();
+    }
+
+    $query = 'SELECT email, pswd FROM users WHERE email="' . $email . '";';
+
+    try {
+        $result = mysqli_query($conn, $query);
+    }
+    catch (Exception $e) {
+        echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
+    }
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row == NULL) {
+        return false;
+    }
+
+    if ($row["pswd"] == $pswd) {
+        echo $row["email"];
+        return true;
+    }
     return false;
+
 }
 
 function getUserByEmail($email) {
-    $users = fopen("users.txt", "r") or die("Unable to open file!");
-
-    while (!feof($users)) {
-        $current_credentials = explode("|", fgets($users));
-        $current_email = $current_credentials[0];
-        if ($current_email == $email) {
-            return $current_credentials[1];
-        }
-    }
-    fclose($users);
-    return false;
+       // dit voelt niet goed
+       $servername = "localhost";
+       $username = "florians_webshop_user";
+       $password = "_9Cq>&djZFE>g5i";
+       $dbname = "florians_webshop";
+   
+       try {
+           $conn = mysqli_connect($servername, $username, $password, $dbname);
+       }
+       catch (Exception $e) {
+           echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
+           exit();
+       }
+   
+       $query = "SELECT user FROM users WHERE email='" . $email . "';";
+   
+       try {
+           $result = mysqli_query($conn, $query);
+       }
+       catch (Exception $e) {
+           echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
+           exit();
+       }
+       $row = mysqli_fetch_assoc($result);
+   
+       if ($row == NULL) {
+           // wat moet ik dan hier returnen? een default instellen?
+           return false;
+       }
+   
+       return $row["user"];
 }
 
 function getSessionVar($key, $default="") {

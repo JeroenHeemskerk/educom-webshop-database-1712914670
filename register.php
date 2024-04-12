@@ -34,7 +34,7 @@ function showRegisterEnd() {
 
 function showRegisterContent($data) {
     showRegisterStart();
-    showRegisterField('username', 'Gebruikersnaam', 'text', $data);
+    showRegisterField('user', 'Gebruikersnaam', 'text', $data);
     showRegisterField('email', 'Email', 'text', $data);
     showRegisterField('pswd', 'Wachtwoord', 'password', $data);
     showRegisterField('pswd2', 'Herhaal wachtwoord', 'password', $data);
@@ -44,19 +44,19 @@ function showRegisterContent($data) {
 
 function validateRegister() {
     $valid = false;
-    $errors = array("username"=>"", "email"=>"", "pswd"=>"", 
+    $errors = array("user"=>"", "email"=>"", "pswd"=>"", 
     "pswd2"=>"", );
 
-    $values = array("username"=>"", "email"=>"", "pswd"=>"", "pswd2"=>"");
+    $values = array("user"=>"", "email"=>"", "pswd"=>"", "pswd2"=>"");
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $values["username"] = getPostVar("username");
+        $values["user"] = getPostVar("user");
         $values["email"] =  getPostVar("email", FILTER_SANITIZE_EMAIL);
         $values["pswd"] =  getPostVar("pswd");
         $values["pswd2"] =  getPostVar("pswd2");
 
-        if (empty($values["username"])) {
-            $errors["username"] = "Vul alsjeblieft een gebruikersnaam in.";
+        if (empty($values["user"])) {
+            $errors["user"] = "Vul alsjeblieft een gebruikersnaam in.";
         }
 
         if (empty($values["email"])) {
