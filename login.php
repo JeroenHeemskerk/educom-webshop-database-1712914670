@@ -4,31 +4,6 @@ function getLoginTitle() {
     return "Login";
 }
 
-function showLoginStart() {
-    echo '<p class="content">Log hier in met je email en wachtwoord:</p>';
-    echo '<form method=POST action="'; echo htmlspecialchars($_SERVER['PHP_SELF']); echo '">';
-}
-
-function showLoginField($fieldName, $label, $type, $data, $placeholder=NULL) {
-    $values = $data["values"];
-    $errors = $data["errors"];
-
-    echo '<div>';
-    echo '<label for="' . $fieldName . '">' . $label . ': </label>';
-
-    switch ($type) {
-        case "text":
-            echo '<input type="' . $type . '" id="' . $fieldName . '" name="' . $fieldName . '" value="' . $values[$fieldName] . '" placeholder="' . $placeholder . '">';
-            echo '<span class="error"> ' . $errors[$fieldName] . '</span>';
-            break;
-
-        case "password":
-            echo '<input type="' . $type . '" id="' . $fieldName . '" name="' . $fieldName . '" placeholder="' . $placeholder . '">';
-            echo '<span class="error"> ' . $errors[$fieldName] . '</span>';
-    }
-    echo '</div>';
-}
-
 function validateLogin() {
     $valid = false;
     $errors = array("email"=>"", "pswd"=>"");
@@ -69,15 +44,10 @@ function validateLogin() {
     return ['valid' => $valid, 'values' => $values, 'errors' => $errors];
 }
 
-function showLoginEnd() {
-    echo '<input type="hidden" id="page" name="page" value="login">';
-    echo '<input type="submit" value="Login">';
-    echo '</form>';
-}
-
 function showLoginContent($data) {
-    showLoginStart();
-    showLoginField('email', 'Email', 'text', $data);
-    showLoginField('pswd', "Wachtwoord", 'password', $data);
-    showLoginEnd();
+    include_once('forms.php');
+    showFormStart("Log hier in met je email en wachtwoord:");
+    showFormField('email', 'Email', 'text', $data, NULL, NULL, false);
+    showFormField('pswd', "Wachtwoord", 'password', $data, NULL, NULL, false);
+    showFormEnd("login", "Login");
 }

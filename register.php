@@ -4,44 +4,6 @@ function getRegisterTitle() {
     return "Registration";
 }
 
-function showRegisterStart() {
-    echo '<p class="content">Registreer je door het volgende formulier in te vullen:</p>';
-    echo '<form method="POST" action="'; echo htmlspecialchars($_SERVER['PHP_SELF']); echo '">';
-}
-
-function showRegisterField($fieldName, $label, $type, $vald_vals_errs, $placeholder=NULL) {
-        $values = $vald_vals_errs["values"];
-        $errors = $vald_vals_errs["errors"];
-    
-        echo '<div>';
-        echo '<label for="' . $fieldName . '">' . $label . ': </label>';
-    
-        switch ($type) {
-            case "text":
-            case "password":
-                echo '<input type="' . $type . '" id="' . $fieldName . '" name="' . $fieldName . '" value="' . $values[$fieldName] . '" placeholder="' . $placeholder . '">';
-                echo '<span class="error"> ' . $errors[$fieldName] . '</span>';
-                break;
-            }
-        echo '</div>';
-}
-
-function showRegisterEnd() {
-    echo '<input type="hidden" id="page" name="page" value="register">';
-    echo '<input type="submit" value="Registreer">';
-    echo '</form>';
-}
-
-function showRegisterContent($data) {
-    showRegisterStart();
-    showRegisterField('user', 'Gebruikersnaam', 'text', $data);
-    showRegisterField('email', 'Email', 'text', $data);
-    showRegisterField('pswd', 'Wachtwoord', 'password', $data);
-    showRegisterField('pswd2', 'Herhaal wachtwoord', 'password', $data);
-    showRegisterEnd();
-
-}
-
 function validateRegister() {
     $valid = false;
     $errors = array("user"=>"", "email"=>"", "pswd"=>"", 
@@ -95,4 +57,14 @@ function validateRegister() {
     }
 
     return ['valid' => $valid, 'values' => $values, 'errors' => $errors];
+}
+
+function showRegisterContent($data) {
+    include_once('forms.php');
+    showFormStart("Registreer door het volgende formulier in te vullen:");
+    showFormField('user', 'Gebruikersnaam', 'text', $data, NULL, NULL, false);
+    showFormField('email', 'Email', 'text', $data, NULL, NULL, false);
+    showFormField('pswd', 'Wachtwoord', 'password', $data, NULL, NULL, false);
+    showFormField('pswd2', 'Herhaal wachtwoord', 'password', $data, NULL, NULL, false);
+    showFormEnd("register", "Registreren");
 }

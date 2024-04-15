@@ -90,6 +90,7 @@ function showHeader($data) {
     $page = $data["page"];
     switch ($page) {
         case "contact":
+        case "thanks":
             include_once('contact.php');
             echo getContactTitle();
             break;
