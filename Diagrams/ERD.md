@@ -23,7 +23,7 @@ erDiagram
     ordersProducts {
         int    id         PK
         int    order_id   FK
-        string product_id
+        string product_id FK
         int    count
     }
 ```
