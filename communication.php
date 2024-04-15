@@ -1,47 +1,10 @@
 <?php 
 
-// dit voelt niet goed, 
-// $servername = "localhost";
-// $username = "florians_webshop_user";
-// $password = "_9Cq>&djZFE>g5i";
-// $dbname = "florians_webshop";
-
-// // Create connection
-
-// try {
-//     $conn = mysqli_connect($servername, $username, $password, $dbname);
-// }
-// catch (Exception $e) {
-//     echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
-//     exit();
-// }
-
-// $sql = "SELECT * FROM users;";
-
-// try {
-//     $result = mysqli_query($conn, $sql);
-// }
-// catch (Exception $e) {
-//     echo 'MySQL select error: ' . $e->getMessage() . PHP_EOL;
-// }
-
-// if (mysqli_num_rows($result) > 0) {
-//     // output data of each row
-//     while($row = mysqli_fetch_assoc($result)) {
-//       echo "id: " . $row["id"]. " - Email: " . $row["email"] . " with username: " . $row["user"] . " and Password: " . $row["pswd"] . "<br>";
-//     }
-//   } else {
-//     echo "0 results";
-//   }
-// mysqli_close($conn);
-
-
-function addAccount($credentials) {
-    // dit voelt niet goed
-    $servername = "localhost";
-    $username = "florians_webshop_user";
-    $password = "_9Cq>&djZFE>g5i";
-    $dbname = "florians_webshop";
+function makeDataBaseConnection() {
+    $servername = getenv("MYSQL_FLORIAN_WEBSHOP_HOST"); 
+    $dbname = getenv("MYSQL_FLORIAN_WEBSHOP_DATABASE"); 
+    $username = getenv("MYSQL_FLORIAN_WEBSHOP_USER"); 
+    $password = getenv("MYSQL_FLORIAN_WEBSHOP_PASSWORD");
 
     try {
         $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -50,35 +13,10 @@ function addAccount($credentials) {
         echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
         exit();
     }
-
-    $query = "INSERT INTO users (email, user, pswd) VALUES ('" . $credentials["email"] . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";
-
-    try {
-        mysqli_query($conn, $query);
-    }
-    catch (Exception $e) {
-        echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
-        exit();
-    }
+    return $conn;
 }
 
-function doesEmailExist($email) {
-    // dit voelt niet goed
-    $servername = "localhost";
-    $username = "florians_webshop_user";
-    $password = "_9Cq>&djZFE>g5i";
-    $dbname = "florians_webshop";
-
-    try {
-        $conn = mysqli_connect($servername, $username, $password, $dbname);
-    }
-    catch (Exception $e) {
-        echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
-        exit();
-    }
-
-    $query = "SELECT email FROM users WHERE email='" . $email . "';";
-
+function executeDataBaseQuery($query, $conn) {
     try {
         $result = mysqli_query($conn, $query);
     }
@@ -86,6 +24,25 @@ function doesEmailExist($email) {
         echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
         exit();
     }
+
+    return $result;
+}
+
+function addAccount($credentials) {
+    $conn = makeDataBaseConnection();
+
+    $query = "INSERT INTO users (email, user, pswd) VALUES ('" . $credentials["email"] . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";
+
+    executeDataBaseQuery($query, $conn);
+}
+
+function doesEmailExist($email) {
+    $conn = makeDataBaseConnection();
+
+    $query = "SELECT email FROM users WHERE email='" . $email . "';";
+
+    $result = executeDataBaseQuery($query, $conn);
+
     $row = mysqli_fetch_assoc($result);
 
     if ($row == NULL) {
@@ -96,28 +53,11 @@ function doesEmailExist($email) {
 }
 
 function authenticateUser($email, $pswd) {
-    // dit voelt niet goed
-    $servername = "localhost";
-    $username = "florians_webshop_user";
-    $password = "_9Cq>&djZFE>g5i";
-    $dbname = "florians_webshop";
-
-    try {
-        $conn = mysqli_connect($servername, $username, $password, $dbname);
-    }
-    catch (Exception $e) {
-        echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
-        exit();
-    }
+    $conn = makeDataBaseConnection();
 
     $query = 'SELECT email, pswd FROM users WHERE email="' . $email . '";';
 
-    try {
-        $result = mysqli_query($conn, $query);
-    }
-    catch (Exception $e) {
-        echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
-    }
+    $result = executeDataBaseQuery($query, $conn);
     $row = mysqli_fetch_assoc($result);
 
     if ($row == NULL) {
@@ -127,42 +67,24 @@ function authenticateUser($email, $pswd) {
     if ($row["pswd"] == $pswd) {
         return true;
     }
-    return false;
 
+    return false;
 }
 
 function getUserByEmail($email) {
-       // dit voelt niet goed
-       $servername = "localhost";
-       $username = "florians_webshop_user";
-       $password = "_9Cq>&djZFE>g5i";
-       $dbname = "florians_webshop";
-   
-       try {
-           $conn = mysqli_connect($servername, $username, $password, $dbname);
-       }
-       catch (Exception $e) {
-           echo 'MySQL connection error: ' . $e->getMessage() . PHP_EOL;
-           exit();
-       }
-   
-       $query = "SELECT user FROM users WHERE email='" . $email . "';";
-   
-       try {
-           $result = mysqli_query($conn, $query);
-       }
-       catch (Exception $e) {
-           echo 'MySQL query error: ' . $e->getMessage() . PHP_EOL;
-           exit();
-       }
-       $row = mysqli_fetch_assoc($result);
-   
-       if ($row == NULL) {
-           // wat moet ik dan hier returnen? een default instellen?
-           return false;
-       }
-   
-       return $row["user"];
+    $conn = makeDataBaseConnection();
+
+    $query = "SELECT user FROM users WHERE email='" . $email . "';";
+
+    $result = executeDataBaseQuery($query, $conn);
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row == NULL) {
+        // wat moet ik dan hier returnen? een default instellen?
+        return false;
+    }
+
+    return $row["user"];
 }
 
 function getSessionVar($key, $default="") {
@@ -170,6 +92,7 @@ function getSessionVar($key, $default="") {
     if (isset($_SESSION[$key])) {
         return $_SESSION[$key];
     }
+    
     return $default;
 }
 
