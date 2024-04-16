@@ -104,11 +104,11 @@ textarea {
     font-family: "Open Sans", sans-serif;
 }
 
-.product a {
+.product a, .cart-list a {
     color: inherit;
 }
 
-.product:hover {
+.product:hover, .cart-list:hover {
     text-decoration: underline;
     color: rgb(106, 187, 213);
 }
@@ -144,7 +144,25 @@ textarea {
     margin-left: 10px;
 }
 
+.cart-list {
+    text-decoration: none;
+    color: black;
+    font-family: "Open Sans", sans-serif;
+}
+
 .cart-list img {
-    width: 10%;
-    height: 10%;
+    width: 15%;
+    height: 15%;
+    display: inline-block;
+}
+
+.cart-list p {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 5px;
+}
+
+#total-cart {
+    font-family: "Open Sans", sans-serif;
+    color: red;
 }
