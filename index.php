@@ -1,5 +1,6 @@
 <?php 
 if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
+
 $page = getRequestedPage();
 $data = processRequest($page);
 showPage($data);
@@ -14,6 +15,7 @@ function getRequestedPage() {
     }
     return $request_page;
 }
+
 function getGetVar($key, $default="") {  
     $value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);  
      
@@ -60,11 +62,16 @@ function processRequest($page) {
                 $page = "home";
             }
             break;
+
+        case "shop":
+            include_once('communication.php');
+            $data["products"] = getProducts();
+
     }
     $data["page"] = $page;
 
     // Build the dynamic navigation bar
-    $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT");
+    $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT", "shop"=>"WEBSHOP");
     include_once('communication.php');
     if (isUserLoggedIn()) {
         $menu["logout"] = 'LOGOUT ' . getLoggedInUser();
@@ -110,6 +117,10 @@ function showHeader($data) {
             include_once('login.php');
             echo getLoginTitle();
             break;
+        case "shop":
+            include_once('shop.php');
+            echo getShopTitle();
+            break;
 
         default:
             include_once('error404.php');
@@ -132,7 +143,6 @@ function showBody($data) {
     echo "</body>" . PHP_EOL;
 }
 
-// TODO: incorporate menu into data
 function showNavBar($data) {
     $menu = $data["menu"];
     echo '<ul class="navbar">';
@@ -144,6 +154,7 @@ function showNavBar($data) {
 
 function showContent($data) {
     $page = $data["page"];
+
     switch ($page) {
         case "about":
             include_once('about.php');
@@ -173,6 +184,12 @@ function showContent($data) {
         case "login":
             include_once('login.php');
             showLoginContent($data);
+            break;
+
+        case "shop":
+            $data["id"] = getGetVar("product");
+            include_once('shop.php');
+            showShopContent($data);
             break;
 
         default:

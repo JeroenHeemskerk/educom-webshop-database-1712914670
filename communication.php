@@ -114,3 +114,22 @@ function doLogoutUser() {
 function getLoggedInUser() {
     return getUserByEmail(getSessionVar('email'));
 }
+
+function getProducts() {
+    $conn = makeDataBaseConnection();
+
+    $query = "SELECT * FROM products";
+    $result = executeDataBaseQuery($query, $conn);
+
+    $products = array();
+
+    while($row = mysqli_fetch_assoc($result)) {
+        $products[$row["id"]] = array("name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
+    }
+
+    return $products;
+}
+
+function getProductByID() {
+    
+}

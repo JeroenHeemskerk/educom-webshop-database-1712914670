@@ -10,7 +10,7 @@ h1 {
     font-family: Merriweather, serif;
 }
 
-h2 {
+h2, h3, h4 {
     font-family: Merriweather, serif;
 }
 
@@ -53,7 +53,7 @@ footer {
 }
 
 form {
-    font-family:  "Open Sans", sans-serif;
+    font-family: "Open Sans", sans-serif;
 }
 
 input, select, textarea { 
@@ -70,7 +70,6 @@ label {
     display: inline-block;
 }
 
-
 textarea {
     vertical-align: top;
 }
@@ -78,4 +77,62 @@ textarea {
 #profiel-foto {
     width: 150px;
     height: 200px;
+}
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    align-content: flex-start;
+}
+  
+.product {
+    flex-grow: 0; /* Don't allow the item to grow */
+    flex-shrink: 0; /* Don't allow the item to shrink */
+    flex-basis: calc(30% - 20px); /* Set the initial width of the item */
+    margin: 10px; /* Add some space between items */
+    text-align: center; /* Center the content horizontally */
+    text-decoration: none;
+    color: black;
+}
+
+.product img {
+    width: 90%;
+    height: 90%;
+}
+
+.product p {
+    font-family: "Open Sans", sans-serif;
+}
+
+.product a {
+    color: inherit;
+}
+
+.product:hover {
+    text-decoration: underline;
+    color: rgb(106, 187, 213);
+}
+
+.detail img {
+    width: 60%;
+    height: 60%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.detail p {
+    font-family: "Open Sans", sans-serif;
+    margin-top: 4px;
+}
+
+.detail h4 {
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
+.detail-info {
+    display: inline-block;
+    width: 35%;
+    vertical-align: top;
+    margin-left: 10px;
 }
