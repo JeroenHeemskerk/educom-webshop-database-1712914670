@@ -1,5 +1,6 @@
 <?php 
 
+
 function makeDataBaseConnection() {
     $servername = getenv("MYSQL_FLORIAN_WEBSHOP_HOST"); 
     $dbname = getenv("MYSQL_FLORIAN_WEBSHOP_DATABASE"); 
@@ -104,6 +105,7 @@ function doLoginUser($values) {
     if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
     $_SESSION["email"] = $values["email"];
     $_SESSION["login"] = true;
+    $_SESSION["cart"] = array();
 }
 
 function doLogoutUser() {
@@ -115,6 +117,19 @@ function getLoggedInUser() {
     return getUserByEmail(getSessionVar('email'));
 }
 
+function addToCart($id) {
+    if (empty($_SESSION["cart"][$id])) {
+        $_SESSION["cart"][$id] = 1;
+    }
+    else {
+        $_SESSION["cart"][$id]++;
+    }
+}
+
+function getCart() {
+    return $_SESSION["cart"];
+}
+
 function getProducts() {
     $conn = makeDataBaseConnection();
 
@@ -124,12 +139,8 @@ function getProducts() {
     $products = array();
 
     while($row = mysqli_fetch_assoc($result)) {
-        $products[$row["id"]] = array("name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
+        $products[$row["id"]] = array("id"=> $row["id"], "name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
     }
 
     return $products;
-}
-
-function getProductByID() {
-    
 }

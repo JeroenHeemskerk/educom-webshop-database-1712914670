@@ -130,6 +130,13 @@ textarea {
     margin-top: 4px;
 }
 
+.detail-info button {
+    border: none;
+    font-family: "Open Sans", sans-serif;
+    background-color: #D57A6A;
+    color: white;
+}
+
 .detail-info {
     display: inline-block;
     width: 35%;

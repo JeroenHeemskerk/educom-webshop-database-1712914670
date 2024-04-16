@@ -1,6 +1,7 @@
 <?php 
 if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
-
+var_dump($_SESSION);
+var_dump($_POST);
 $page = getRequestedPage();
 $data = processRequest($page);
 showPage($data);
@@ -64,8 +65,15 @@ function processRequest($page) {
             break;
 
         case "shop":
+            $id = getPostVar("productId");
+
             include_once('communication.php');
-            $data["products"] = getProducts();
+            if (!isset($id)) {
+                addToCart($id);
+            }
+            else {
+                $data["products"] = getProducts();
+            }
 
     }
     $data["page"] = $page;
@@ -74,6 +82,7 @@ function processRequest($page) {
     $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT", "shop"=>"WEBSHOP");
     include_once('communication.php');
     if (isUserLoggedIn()) {
+        $menu["cart"] = 'CART';
         $menu["logout"] = 'LOGOUT ' . getLoggedInUser();
     } 
     else {
@@ -187,9 +196,14 @@ function showContent($data) {
             break;
 
         case "shop":
-            $data["id"] = getGetVar("product");
+            $id = getGetVar("product");
             include_once('shop.php');
-            showShopContent($data);
+            showShopContent($data, $id);
+            break;
+
+        case "cart":
+            include_once('cart.php');
+            showCartContent();
             break;
 
         default:
