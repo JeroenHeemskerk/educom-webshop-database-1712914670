@@ -1,7 +1,5 @@
 <?php 
 if (session_status() !== PHP_SESSION_ACTIVE) {session_start();}
-var_dump($_SESSION);
-var_dump($_POST);
 $page = getRequestedPage();
 $data = processRequest($page);
 showPage($data);
@@ -65,15 +63,13 @@ function processRequest($page) {
             break;
 
         case "shop":
-            $id = getPostVar("productId");
-
+            $cartId = getPostVar("productId");
             include_once('communication.php');
-            if (!isset($id)) {
-                addToCart($id);
+            if (!empty($cartId)) {
+                addToCart($cartId);
             }
-            else {
-                $data["products"] = getProducts();
-            }
+
+            $data["products"] = getProducts();
 
     }
     $data["page"] = $page;
@@ -196,7 +192,7 @@ function showContent($data) {
             break;
 
         case "shop":
-            $id = getGetVar("product");
+            $id = getGetVar("product") | getPostVar("productId");
             include_once('shop.php');
             showShopContent($data, $id);
             break;

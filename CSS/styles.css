@@ -130,7 +130,7 @@ textarea {
     margin-top: 4px;
 }
 
-.detail-info button {
+.detail-info input {
     border: none;
     font-family: "Open Sans", sans-serif;
     background-color: #D57A6A;
@@ -142,4 +142,9 @@ textarea {
     width: 35%;
     vertical-align: top;
     margin-left: 10px;
+}
+
+.cart-list img {
+    width: 10%;
+    height: 10%;
 }

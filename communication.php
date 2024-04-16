@@ -126,14 +126,26 @@ function addToCart($id) {
     }
 }
 
-function getCart() {
+function getCartProducts() {
+    $cartIds = array_keys($_SESSION["cart"]);
+
+    return getProducts($cartIds);
+}
+
+function getCartCounts() {
     return $_SESSION["cart"];
 }
 
-function getProducts() {
+function getProducts($ids=array()) {
     $conn = makeDataBaseConnection();
 
-    $query = "SELECT * FROM products";
+    if (empty($ids)) {
+        $query = "SELECT * FROM products";
+    }
+    else {
+        $query = 'SELECT * FROM products WHERE id IN (' . implode(',', $ids) . ')';
+    }
+
     $result = executeDataBaseQuery($query, $conn);
 
     $products = array();

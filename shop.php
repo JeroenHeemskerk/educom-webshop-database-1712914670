@@ -38,7 +38,6 @@ function showProductContent($data, $id) {
         echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="POST">
         <input type="hidden" name="productId" value="' . $id . '">
         <input type="hidden" name="page" value="shop">
-        <input type="hidden" name="product" value="' . $id . '">
         <input type="submit" value="Voeg toe aan CART">
     </form>';
     }
