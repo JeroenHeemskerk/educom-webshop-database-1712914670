@@ -10,6 +10,7 @@ erDiagram
     orders {
         int id      PK
         int user_id FK
+        date order_date
     }
     products {
         int    id          PK
