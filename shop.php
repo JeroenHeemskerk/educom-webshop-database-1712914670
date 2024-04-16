@@ -6,21 +6,25 @@ function getShopTitle() {
 
 function showShopContent($data, $id) {
     include_once('communication.php');
-    $products = $data["products"];
     if (empty($id)) {
-        echo '<div class="product-list">';
-        foreach($products as $id=>$product) {
-            echo '<a class="product" href="index.php?page=shop&product=' . $id . '"><div class="product">' . PHP_EOL;
-            echo '<h3>' . $product["name"] . '</h3>' . PHP_EOL;
-            echo '<img src="Images/' . $product["fname"] . '" alt="' . $product["description"] . '">';
-            echo '<p>Prijs: &euro;' . $product["price"]  . ',-</p>';
-            echo '</div></a>' . PHP_EOL;
-        }
-        echo '</div>';
+        showWebshopProducts($data, $id);
     }
     else {
         showProductContent($data, $id);
     }
+}
+
+function showWebshopProducts ($data, $id) {
+    $products = $data["products"];
+    echo '<div class="product-list">';
+    foreach($products as $id=>$product) {
+        echo '<a class="product" href="index.php?page=shop&product=' . $id . '"><div class="product">' . PHP_EOL;
+        echo '<h3>' . $product["name"] . '</h3>' . PHP_EOL;
+        echo '<img src="Images/' . $product["fname"] . '" alt="' . $product["description"] . '">';
+        echo '<p>Prijs: &euro;' . $product["price"]  . ',-</p>';
+        echo '</div></a>' . PHP_EOL;
+    }
+    echo '</div>';
 }
 
 function showProductContent($data, $id) {
@@ -42,7 +46,5 @@ function showProductContent($data, $id) {
     </form>';
     }
     echo '</div>';
-
-
     echo '</div>';
 }

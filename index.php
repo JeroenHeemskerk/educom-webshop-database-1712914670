@@ -145,7 +145,7 @@ function showHeader($data) {
 
 function showBody($data) {
     echo "<body>" . PHP_EOL;
-    echo "<h1>Formulierensite</h1>";
+    echo "<h1>Florian&apos;s Rariteitenkabinet</h1>";
     showNavBar($data);
     showContent($data);
     showFooter();

@@ -127,24 +127,31 @@ function addToCart($id) {
 }
 
 function getCartProducts() {
-    $cartIds = array_keys($_SESSION["cart"]);
+    $conn = makeDataBaseConnection();
 
-    return getProducts($cartIds);
+    $cartIds = array_keys($_SESSION["cart"]);
+    if (empty($cartIds)) {
+        return array();
+    }
+    $query = 'SELECT * FROM products WHERE id IN (' . implode(',', $cartIds) . ')';
+    $result = executeDataBaseQuery($query, $conn);
+
+    $products = array();
+    while($row = mysqli_fetch_assoc($result)) {
+        $products[$row["id"]] = array("id"=> $row["id"], "name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
+    }
+
+    return $products;
 }
 
 function getCartCounts() {
-    return $_SESSION["cart"];
+    return getSessionVar("cart", array());
 }
 
-function getProducts($ids=array()) {
+function getProducts() {
     $conn = makeDataBaseConnection();
 
-    if (empty($ids)) {
-        $query = "SELECT * FROM products";
-    }
-    else {
-        $query = 'SELECT * FROM products WHERE id IN (' . implode(',', $ids) . ')';
-    }
+    $query = "SELECT * FROM products";
 
     $result = executeDataBaseQuery($query, $conn);
 
