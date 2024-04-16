@@ -126,6 +126,10 @@ function showHeader($data) {
             include_once('shop.php');
             echo getShopTitle();
             break;
+        case "cart":
+            include_once('cart.php');
+            echo getCartTitle();
+            break;
 
         default:
             include_once('error404.php');

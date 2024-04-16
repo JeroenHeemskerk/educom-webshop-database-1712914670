@@ -1,5 +1,9 @@
 <?php 
 
+function getCartTitle() {
+    return "Cart";
+}
+
 function showCartContent () {
     echo '<h2>Winkelmandje</h2>';
 
