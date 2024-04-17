@@ -38,7 +38,7 @@ function addAccount($credentials) {
     } 
 } 
 
-function getUserByEmail($email) {
+function getUserDataByEmail($email) {
     $conn = makeDataBaseConnection();
 
     try {
@@ -56,26 +56,44 @@ function getUserByEmail($email) {
 }
 
 function doesEmailExist($email) { 
-    return !empty(getUserByEmail($email));
+    return !empty(getUserDataByEmail($email));
 }
 
-function authenticateUser($email, $pswd) {
-    $conn = makeDataBaseConnection();
-
-    try {
-        $user = getUserByEmail($email);
-
-        if (!empty($user) && $pswd == $user["pswd"]){
-            return true;
-        }
-        return false;
-    }
-    finally {
-        mysqli_close($conn);
-    }
+function getUserByEmail($email) {
+    $user = getUserDataByEmail($email);
+     
+    if (empty($user)) {
+        return NULL; 
+    } 
+ 
+    return $user["user"]; 
 }
 
+define('RESULT_OK', 0);
+define('RESULT_UNKNOWN_USER', -1);
+define('RESULT_WRONG_PASSWORD', -2); 
+define('RESULT_EMPTY_EMAIL', -3);
+define('RESULT_EMPTY_PSWD', -4);
+function authenticateUser($email, $pswd) { 
+    if (empty($email)) {
+        return ['result' => RESULT_EMPTY_EMAIL];
+    }
 
+    $user = getUserDataByEmail($email);
+    if (empty($user)) {
+        return ['result' => RESULT_UNKNOWN_USER]; 
+    } 
+    
+    if(empty($pswd)) {
+        return ['result' => RESULT_EMPTY_PSWD];
+    }
+ 
+    if ($user["pswd"] != $pswd) { /* JH: Ik heb deze 'if' omgedraaid omdat het beter leest om eerst alle fouten af te handelen */
+        return ['result' => RESULT_WRONG_PASSWORD]; 
+    } 
+    
+    return ['result' => RESULT_OK, 'user' => $user]; 
+} 
 
 function getProductsByIDs($ids) {
     $conn = makeDataBaseConnection();
@@ -116,8 +134,6 @@ function getProducts() {
     }
 
 }
-
-
 
 function addPurchase() {
     $conn = makeDataBaseConnection();
