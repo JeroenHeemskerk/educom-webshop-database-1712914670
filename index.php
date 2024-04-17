@@ -63,21 +63,27 @@ function processRequest($page) {
             break;
 
         case "shop":
-            $cartId = getPostVar("productId");
-            include_once('communication.php');
-            if (!empty($cartId)) {
-                addToCart($cartId);
-            }
-
-            $cartPurchase = getPostVar("purchase");
-            if ($cartPurchase) {
-                addPurchase();
-                emptyCart();
-            }
-
             // voor iedere webshop pagina vraag ik nu alle producten op
             // daar ben ik nog niet heel tevreden over
-            $data["products"] = getProducts();
+            include_once('communication.php');
+            $data = getProducts();
+            $data["productId"] = getGetVar("detail", 0);
+            break;
+
+        case "cart":
+            $action = getPostVar('action');
+            $id = getPostVar('productId');
+            if (empty($action) || empty($id)) {
+                $data = array();
+            }
+            else {
+                include_once('cart.php');
+                $data = handleCartAction($action, $id);
+                $page = $data["page"];
+            }
+
+            break;
+
 
     }
     $data["page"] = $page;
@@ -204,9 +210,8 @@ function showContent($data) {
             break;
 
         case "shop":
-            $id = getGetVar("detail") | getPostVar("productId");
             include_once('shop.php');
-            showShopContent($data, $id);
+            showShopContent($data);
             break;
 
         case "cart":

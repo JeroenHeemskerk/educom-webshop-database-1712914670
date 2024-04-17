@@ -28,8 +28,23 @@ function getCartProducts() {
     return ["products" => $cartProducts, "total"=>$total];
 }
 
+function handleCartAction($action, $id) {
+    // returns the page to redirect to
+    include_once('communication.php');
+    switch ($action) {
+        case "addToCart":
+            addToCart($id);
+            return ["products"=>getProducts()["products"], "page"=>"shop", "productId"=>$id];
 
-function showCartContent () {
+        case "purchase":
+            addPurchase();
+            emptyCart();
+            break;
+
+    }
+}
+
+function showCartContent() {
     echo '<h2>Winkelmandje</h2>';
 
     include_once('communication.php');

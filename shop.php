@@ -4,17 +4,17 @@ function getShopTitle() {
     return "Webshop";
 }
 
-function showShopContent($data, $id) {
+function showShopContent($data) {
     include_once('communication.php');
-    if (empty($id)) {
-        showWebshopProducts($data, $id);
+    if (empty($data["productId"])) {
+        showWebshopProducts($data);
     }
     else {
-        showProductContent($data, $id);
+        showProductContent($data);
     }
 }
 
-function showWebshopProducts ($data, $id) {
+function showWebshopProducts ($data) {
     $products = $data["products"];
     echo '<div class="product-list">';
     foreach($products as $id=>$product) {
@@ -27,8 +27,9 @@ function showWebshopProducts ($data, $id) {
     echo '</div>';
 }
 
-function showProductContent($data, $id) {
+function showProductContent($data) {
     include_once('communication.php');
+    $id = $data["productId"];
     $product = $data["products"][$id];
 
     echo '<div class="detail">';
@@ -41,7 +42,8 @@ function showProductContent($data, $id) {
     if (isUserLoggedIn()) {
         echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="POST">
         <input type="hidden" name="productId" value="' . $id . '">
-        <input type="hidden" name="page" value="shop">
+        <input type="hidden" name="action" value="addToCart">
+        <input type="hidden" name="page" value="cart">
         <input type="submit" value="Voeg toe aan CART">
     </form>';
     }
