@@ -69,6 +69,14 @@ function processRequest($page) {
                 addToCart($cartId);
             }
 
+            $cartPurchase = getPostVar("purchase");
+            if ($cartPurchase) {
+                addPurchase();
+                emptyCart();
+            }
+
+            // voor iedere webshop pagina vraag ik nu alle producten op
+            // daar ben ik nog niet heel tevreden over
             $data["products"] = getProducts();
 
     }
@@ -196,7 +204,7 @@ function showContent($data) {
             break;
 
         case "shop":
-            $id = getGetVar("product") | getPostVar("productId");
+            $id = getGetVar("detail") | getPostVar("productId");
             include_once('shop.php');
             showShopContent($data, $id);
             break;

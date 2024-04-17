@@ -7,11 +7,11 @@ body {
 h1 {
     font-size: 48px;
     text-align: center;
-    font-family: Merriweather, serif;
+    font-family: "Merriweather", serif;
 }
 
 h2, h3, h4 {
-    font-family: Merriweather, serif;
+    font-family: "Merriweather", serif;
 }
 
 ul.navbar {
@@ -130,7 +130,7 @@ textarea {
     margin-top: 4px;
 }
 
-.detail-info input {
+.detail-info input, .cart-list input {
     border: none;
     font-family: "Open Sans", sans-serif;
     background-color: #D57A6A;

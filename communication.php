@@ -126,14 +126,10 @@ function addToCart($id) {
     }
 }
 
-function getCartProducts() {
+function getProductsByIDs($ids) {
     $conn = makeDataBaseConnection();
 
-    $cartIds = array_keys($_SESSION["cart"]);
-    if (empty($cartIds)) {
-        return array();
-    }
-    $query = 'SELECT * FROM products WHERE id IN (' . implode(',', $cartIds) . ')';
+    $query = 'SELECT * FROM products WHERE id IN (' . implode(',', $ids) . ')';
     $result = executeDataBaseQuery($query, $conn);
 
     $products = array();
@@ -142,10 +138,6 @@ function getCartProducts() {
     }
 
     return $products;
-}
-
-function getCartCounts() {
-    return getSessionVar("cart", array());
 }
 
 function getProducts() {
@@ -156,10 +148,26 @@ function getProducts() {
     $result = executeDataBaseQuery($query, $conn);
 
     $products = array();
-
     while($row = mysqli_fetch_assoc($result)) {
         $products[$row["id"]] = array("id"=> $row["id"], "name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
     }
 
     return $products;
+}
+
+function getCart() {
+    return getSessionVar("cart", array());
+}
+
+function emptyCart() {
+    $_SESSION["cart"] = array();
+}
+
+function addPurchase() {
+    $conn = makeDataBaseConnection();
+
+    // $products = getCartProducts();
+    // $cartCounts = getCartCounts();
+
+    // $query = "INSERT INTO ordersProducts (order_id, product_id, count) VALUES ('" . $credentials["email"] . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";";
 }

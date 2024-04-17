@@ -22,9 +22,9 @@ erDiagram
     orders ||--o{ordersProducts: Contains
     products ||--o{ordersProducts: Has
     ordersProducts {
-        int    id         PK
-        int    order_id   FK
-        string product_id FK
-        int    count
+        int id         PK
+        int order_id   FK
+        int product_id FK
+        int count
     }
 ```

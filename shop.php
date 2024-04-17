@@ -18,7 +18,7 @@ function showWebshopProducts ($data, $id) {
     $products = $data["products"];
     echo '<div class="product-list">';
     foreach($products as $id=>$product) {
-        echo '<a class="product" href="index.php?page=shop&product=' . $id . '"><div class="product">' . PHP_EOL;
+        echo '<a class="product" href="index.php?page=shop&detail=' . $id . '"><div class="product">' . PHP_EOL;
         echo '<h3>' . $product["name"] . '</h3>' . PHP_EOL;
         echo '<img src="Images/' . $product["fname"] . '" alt="' . $product["description"] . '">';
         echo '<p>Prijs: &euro;' . $product["price"]  . ',-</p>';
