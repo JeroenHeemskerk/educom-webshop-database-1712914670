@@ -44,6 +44,16 @@ function handleCartAction($action, $id) {
     }
 }
 
+function showActionButton($action, $page, $buttonId, $buttonText, $productId=NULL) {
+    echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="POST">
+    <input type="hidden" name="productId" value="' . $productId . '">
+    <input type="hidden" name="action" value="' . $action . '">';
+    if (!empty($productId)) {echo '<input type="hidden" name="page" value="' . $page . '">';}
+    echo '<input id="' . $buttonId . '" type="submit" value="' . $buttonText . '">
+</form>';
+}
+
+
 function showCartContent() {
     echo '<h2>Winkelmandje</h2>';
 
@@ -59,10 +69,6 @@ function showCartContent() {
         echo '</div></a>';
     }
     echo '<p id="total-cart">Totaal: &euro;' . $products["total"] . ',-</p>';
-    echo '<form class="cart-list" action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="POST">
-    <input type="hidden" name="purchase" value="true">
-    <input type="hidden" name="page" value="shop">
-    <input type="submit" value="Afrekenen">
-</form>';
+    showActionButton("addPurchase", "cart", "purchaseButton", "Afrekenen");
 }
 

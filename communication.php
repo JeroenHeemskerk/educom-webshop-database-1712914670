@@ -166,6 +166,10 @@ function emptyCart() {
 function addPurchase() {
     $conn = makeDataBaseConnection();
 
+    // eerst order toevoegen aan orders tabel
+
+    
+
     // $products = getCartProducts();
     // $cartCounts = getCartCounts();
 

@@ -40,12 +40,8 @@ function showProductContent($data) {
     echo '<p>' . $product["description"] . '<br><b>Prijs</b>: &euro;' . $product["price"] . '</p>';
 
     if (isUserLoggedIn()) {
-        echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="POST">
-        <input type="hidden" name="productId" value="' . $id . '">
-        <input type="hidden" name="action" value="addToCart">
-        <input type="hidden" name="page" value="cart">
-        <input type="submit" value="Voeg toe aan CART">
-    </form>';
+        include_once('cart.php');
+        showActionButton("addToCart", "cart", "cartAddButton", "Voeg toe aan CART", $id);
     }
     echo '</div>';
     echo '</div>';
