@@ -54,14 +54,17 @@ function processPage($page) {
             include_once('login.php');
             $data = validateLogin();
             if ($data["valid"]) {
-                include_once('communication.php');
+                include_once('session_manager.php');
                 doLoginUser($data["values"]);
                 $data["page"] = "home";
+            }
+            else {
+                $data["page"] = $page;
             }
             return $data;
 
         case "logout":
-            include_once('communication.php');
+            include_once('session_manager.php');
             doLogoutUser();
             return ["page"=>"home"];
 
@@ -72,6 +75,9 @@ function processPage($page) {
                 addAccount($data["values"]);
                 $data["page"] = "home";
             }
+            else {
+                $data["page"] = $page;
+            }
             return $data;
 
         case "shop":
@@ -80,25 +86,27 @@ function processPage($page) {
             include_once('communication.php');
             $data = getProducts();
             $data["productId"] = getGetVar("detail", 0);
+            $data["page"] = $page;
             return $data;
 
         case "cart":
             $action = getPostVar('action');
             $id = getPostVar('productId');
             if (empty($action) || empty($id)) {
-                $data = array();
+                return ["page"=>$page];
             }
             else {
                 include_once('cart.php');
-                $data = handleCartAction($action, $id);
+                return handleCartAction($action, $id);
             }
-            return $data;
+        default:
+            return ["page"=>$page];
     }
 }
 
 function buildMenu() {
     $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT", "shop"=>"WEBSHOP");
-    include_once('communication.php');
+    include_once('session_manager.php');
     if (isUserLoggedIn()) {
         $menu["cart"] = 'CART';
         $menu["logout"] = 'LOGOUT ' . getLoggedInUser();
@@ -157,10 +165,21 @@ function showTitle($page) {
     }
 }
 
+function showGeneralError($data) {
+    if (!empty($data['errors']['general'])) {
+        echo '<div class="error">' . $data['errors']['general'] . '</div>';
+    }
+}
+
+function logError($msg) {
+    echo "LOGGING TO THE SERVER: " . $msg;
+ }
+
 function showBody($data) {
     echo "<body>" . PHP_EOL;
     echo "<h1>Florian&apos;s Rariteitenkabinet</h1>";
     showNavBar($data);
+    showGeneralError($data);
     showContent($data);
     showFooter();
     echo "</body>" . PHP_EOL;

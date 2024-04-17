@@ -6,8 +6,8 @@ function getLoginTitle() {
 
 function validateLogin() {
     $valid = false;
-    $errors = array("email"=>"", "pswd"=>"");
-    $values = array("email"=>"", "pswd"=>"");
+    $errors = array("email"=>"", "pswd"=>"", "general"=>"");
+    $values = array("email"=>"", "pswd"=>"", "userId"=>"", "userName"=>"");
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Is deze include nodig
@@ -23,12 +23,18 @@ function validateLogin() {
             $errors["pswd"] = "Vul je alsjeblieft je wachtwoord in.";
         }
 
-        include_once('communication.php');
-        if (!doesEmailExist($values["email"])) {
-            $errors["email"] = "Er is geen account bekend op deze website met dit emailadres.";
-        }
-        else if (!authenticateUser($values["email"], $values["pswd"])) {
-            $errors["pswd"] = "Wachtwoord onjuist.";
+        try {
+            include_once('communication.php'); 
+            if (!doesEmailExist($values["email"])) { 
+                $errors["email"] = "Er is geen account bekend op deze website met dit emailadres."; 
+            } 
+            else if (!authenticateUser($values["email"], $values["pswd"])) { 
+                $errors["pswd"] = "Wachtwoord onjuist."; 
+            }
+        } 
+        catch (Exception $e) {
+            $error["general"] = "Er is een technische storing, u kunt niet inloggen. Probeer het later nogmaals.";
+            logError('Authentication failed for user ' . $values['email'] . ', SQLError: ' . $e -> getMessage());
         }
 
         foreach($errors as $err_msg) {
@@ -39,6 +45,9 @@ function validateLogin() {
         }
         
         $valid = true;
+        $user = getUserByEmail($values["email"]);
+        $values["userName"] = $user["user"];
+        $values["userId"] = $user["id"];
     }
 
     return ['valid' => $valid, 'values' => $values, 'errors' => $errors];
