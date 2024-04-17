@@ -28,14 +28,27 @@ function getPostVar($key, $default="", $filter=false) {
 }
 
 function processRequest($page) {
+    $data = processPage($page);
+
+    // Build the dynamic navigation bar
+    $data["menu"] = buildMenu();
+    return $data;
+
+}
+
+function processPage($page) {
+    // returns errors and asked values + applies rerouting
     switch ($page) {
         case "contact":
             include_once('contact.php');
             $data = validateContact();
             if ($data["valid"]) {
-                $page = "thanks";
+                $data["page"] = "thanks";
             }
-            break;
+            else {
+                $data["page"] = $page;
+            }
+            return $data;
 
         case "login":
             include_once('login.php');
@@ -43,24 +56,23 @@ function processRequest($page) {
             if ($data["valid"]) {
                 include_once('communication.php');
                 doLoginUser($data["values"]);
-                $page = "home";
+                $data["page"] = "home";
             }
-            break;
+            return $data;
 
         case "logout":
             include_once('communication.php');
             doLogoutUser();
-            $page = "home";
-            break;
+            return ["page"=>"home"];
 
         case "register":
             include_once('register.php');
             $data = validateRegister();
             if ($data["valid"]) {
                 addAccount($data["values"]);
-                $page = "home";
+                $data["page"] = "home";
             }
-            break;
+            return $data;
 
         case "shop":
             // voor iedere webshop pagina vraag ik nu alle producten op
@@ -68,7 +80,7 @@ function processRequest($page) {
             include_once('communication.php');
             $data = getProducts();
             $data["productId"] = getGetVar("detail", 0);
-            break;
+            return $data;
 
         case "cart":
             $action = getPostVar('action');
@@ -79,16 +91,12 @@ function processRequest($page) {
             else {
                 include_once('cart.php');
                 $data = handleCartAction($action, $id);
-                $page = $data["page"];
             }
-
-            break;
-
-
+            return $data;
     }
-    $data["page"] = $page;
+}
 
-    // Build the dynamic navigation bar
+function buildMenu() {
     $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT", "shop"=>"WEBSHOP");
     include_once('communication.php');
     if (isUserLoggedIn()) {
@@ -99,10 +107,7 @@ function processRequest($page) {
         $menu["register"] = "REGISTER";
         $menu["login"] = "LOGIN";
     }
-
-    $data["menu"] = $menu;
-    return $data;
-
+    return $menu;
 }
 
 function beginDocument() {
@@ -112,49 +117,44 @@ function beginDocument() {
 
 function showHeader($data) {
     echo "<head><title>";
-    
-    $page = $data["page"];
-    switch ($page) {
-        case "contact":
-        case "thanks":
-            include_once('contact.php');
-            echo getContactTitle();
-            break;
-        case "about":
-            include_once('about.php');
-            echo getAboutTitle();
-            break;
-        case "home":
-            include_once('home.php');
-            echo getHomeTitle();
-            break;
-        case "register":
-            include_once('register.php');
-            echo getRegisterTitle();
-            break;
-        case "login":
-            include_once('login.php');
-            echo getLoginTitle();
-            break;
-        case "shop":
-            include_once('shop.php');
-            echo getShopTitle();
-            break;
-        case "cart":
-            include_once('cart.php');
-            echo getCartTitle();
-            break;
-
-        default:
-            include_once('error404.php');
-            echo get404Title();
-
-    }
+    echo showTitle($data["page"]);
     echo "</title>";    
     echo '<link rel="icon" type="svg" href="Images/online-form-icon.svg">';
     echo '<link rel="stylesheet" type="text/css" href="CSS/styles.css">';
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather|Open+Sans">';
     echo '</head>';
+}
+
+function showTitle($page) {
+    switch ($page) {
+        case "contact":
+        case "thanks":
+            include_once('contact.php');
+            return getContactTitle();
+        case "about":
+            include_once('about.php');
+            return getAboutTitle();
+        case "home":
+            include_once('home.php');
+            return getHomeTitle();
+        case "register":
+            include_once('register.php');
+            return getRegisterTitle();
+        case "login":
+            include_once('login.php');
+            return getLoginTitle();
+        case "shop":
+            include_once('shop.php');
+            return getShopTitle();
+        case "cart":
+            include_once('cart.php');
+            return getCartTitle();
+
+        default:
+            include_once('error404.php');
+            return get404Title();
+
+    }
 }
 
 function showBody($data) {

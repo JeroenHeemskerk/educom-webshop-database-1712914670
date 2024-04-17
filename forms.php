@@ -20,7 +20,6 @@ function showFormField($fieldName, $label, $type, $data, $placeholder=NULL, $opt
 
     echo '<div>';
     echo '<label for="' . $fieldName . '">' . $label . ': </label>';
-
     switch ($type) {
         case "textarea":
             echo '<' . $type . ' id="' . $fieldName . '" name="' . $fieldName . '" ';
@@ -28,15 +27,14 @@ function showFormField($fieldName, $label, $type, $data, $placeholder=NULL, $opt
                 // bit hacky, used for cols and rows
                 echo $key . '="' . $option . '" ';
             }
-            echo 'placeholder="' . $placeholder . '">';
-            echo $value . '</' . $type . '>';
+            echo 'placeholder="' . $placeholder . '">' . $value . '</' . $type . '>';
             break;
 
         case "radio":
             foreach($options as $key => $option) {
                 echo '<input type="' . $type . '"';
                 echo 'id="' . $fieldName . '-' . $key . '" name="' . $fieldName . '" value="' . $key . '" ';
-                if (isset($value) && $value == $key) { echo "checked";}
+                if (!empty($value) && $value == $key) { echo "checked";}
                 echo '><label class="' . $type . '" for="' . $key . '">' . $option . '</label>';
             }
             break;
@@ -56,7 +54,11 @@ function showFormField($fieldName, $label, $type, $data, $placeholder=NULL, $opt
             break;
     }
 
-    // display error
+    showError($optional, $fieldName, $errors);
+    echo '</div>';
+}
+
+function showError($optional, $fieldName, $errors) {
     echo '<span class="error">';
     if (!$optional) {echo " * ";}
     if (!empty($errors[$fieldName])) {
@@ -64,5 +66,4 @@ function showFormField($fieldName, $label, $type, $data, $placeholder=NULL, $opt
         echo  $errors[$fieldName];
     }
     echo '</span>';
-    echo '</div>';
 }

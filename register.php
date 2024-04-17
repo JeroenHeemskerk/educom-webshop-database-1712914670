@@ -17,14 +17,7 @@ function validateRegister() {
         $values["pswd"] =  getPostVar("pswd");
         $values["pswd2"] =  getPostVar("pswd2");
 
-        if (empty($values["user"])) {
-            $errors["user"] = "Vul alsjeblieft een gebruikersnaam in.";
-        }
-
-        if (empty($values["email"])) {
-            $errors["email"] = "Vul alsjeblieft je emailadres in.";
-        }
-
+        $errors = checkRegisterEmpty($values, $errors);
         include_once('communication.php');
         if (doesEmailExist($values["email"])) {
             $errors["email"] = "Dit emailadres heeft al een account op deze website.";
@@ -32,14 +25,6 @@ function validateRegister() {
 
         if (!filter_var($values["email"], FILTER_VALIDATE_EMAIL)) {
             $errors["email"] = "Vul alsjeblieft een geldig emailadres in.";
-        }
-
-        if (empty($values["pswd"])) {
-            $errors["pswd"] = "Vul een wachtwoord in ter registratie.";
-        }
-
-        if (empty($values["pswd2"])) {
-            $errors["pswd2"] = "Herhaal je gekozen wachtwoord ter verificatie.";
         }
 
         if ($values["pswd"] != $values["pswd2"]) {
@@ -57,6 +42,27 @@ function validateRegister() {
     }
 
     return ['valid' => $valid, 'values' => $values, 'errors' => $errors];
+}
+
+function checkRegisterEmpty($values, $errors) {
+    if (empty($values["user"])) {
+        $errors["user"] = "Vul alsjeblieft een gebruikersnaam in.";
+    }
+
+    if (empty($values["email"])) {
+        $errors["email"] = "Vul alsjeblieft je emailadres in.";
+    }
+
+    if (empty($values["pswd"])) {
+        $errors["pswd"] = "Vul een wachtwoord in ter registratie.";
+    }
+
+    if (empty($values["pswd2"])) {
+        $errors["pswd2"] = "Herhaal je gekozen wachtwoord ter verificatie.";
+    }
+
+    return $errors;
+
 }
 
 function showRegisterContent($data) {

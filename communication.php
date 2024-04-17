@@ -32,7 +32,8 @@ function executeDataBaseQuery($query, $conn) {
 function addAccount($credentials) {
     $conn = makeDataBaseConnection();
 
-    $query = "INSERT INTO users (email, user, pswd) VALUES ('" . $credentials["email"] . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";
+    $email = mysqli_real_escape_string($conn, $credentials["email"]);
+    $query = "INSERT INTO users (email, user, pswd) VALUES ('" . $email . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";
 
     executeDataBaseQuery($query, $conn);
 }
@@ -40,6 +41,7 @@ function addAccount($credentials) {
 function doesEmailExist($email) {
     $conn = makeDataBaseConnection();
 
+    $email = mysqli_real_escape_string($conn, $email);
     $query = "SELECT email FROM users WHERE email='" . $email . "';";
 
     $result = executeDataBaseQuery($query, $conn);
@@ -56,6 +58,7 @@ function doesEmailExist($email) {
 function authenticateUser($email, $pswd) {
     $conn = makeDataBaseConnection();
 
+    $email = mysqli_real_escape_string($conn, $email);
     $query = 'SELECT email, pswd FROM users WHERE email="' . $email . '";';
 
     $result = executeDataBaseQuery($query, $conn);
@@ -75,6 +78,7 @@ function authenticateUser($email, $pswd) {
 function getUserByEmail($email) {
     $conn = makeDataBaseConnection();
 
+    $email = mysqli_real_escape_string($conn, $email);
     $query = "SELECT user FROM users WHERE email='" . $email . "';";
 
     $result = executeDataBaseQuery($query, $conn);

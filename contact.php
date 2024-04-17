@@ -15,77 +15,24 @@ function validateContact() {
     $values = array("gender"=>"--", "name"=>"", "email"=>"", "phone"=>"", "street"=>"", "housenumber"=>"", "additive"=>"", "postalcode"=>"", "municip"=>"", "msg"=>"", "comm"=>"");
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $values["gender"] = getPostVar("gender");
-        $values["name"] =  getPostVar("name");
-        $values["email"] =  getPostVar("email", FILTER_SANITIZE_EMAIL);
-        $values["phone"] =  getPostVar("phone");
-        $values["street"] =  getPostVar("street");
-        $values["housenumber"] =  getPostVar("housenumber");
-        $values["additive"] =  getPostVar("additive");
-        $values["postalcode"] =  getPostVar("postalcode");
-        $values["municip"] =  getPostVar("municip");
-        $values["msg"] =  getPostVar("msg");
-
-        if (empty($values["gender"])) {
-            $errors["gender"] = "Vul alsjeblieft je aanhefvoorkeur in of geef aan dat je dit liever niet laat weten.";
-        }
-        else if (!array_key_exists($values['gender'], GENDERS)) {
-            $errors["gender"] = "Selecteer alsjeblieft een van de aanhefvoorkeuren.";
+        foreach(array_keys($values) as $label) {
+            if ($label == "email") {
+                $values[$label] = getPostVar($label, FILTER_SANITIZE_EMAIL);
+            }
+            else {
+                $values[$label] = getPostVar($label);
+            }
         }
 
-        if (empty($values["name"])) {
-            $errors["name"] = "Vul alsjeblieft je volledige naam in.";
-        }
-        else if (!preg_match('/[a-zA-Z]/', $values["name"])) {  
-            $errors["name"] = "Vul alsjeblieft een naam in met minstens 1 letter.";
-        }
+        $errors = checkContactGender($values, $errors);
+
+        $errors = checkContactName($values, $errors);
 
         if (empty($values["msg"])) {
             $errors["msg"] = "Vul alsjeblieft een bericht in.";
         }
-        
-        if (empty(getPostVar("comm"))) {
-            $errors["comm"] = "Vul alsjeblieft je communicatievoorkeur in.";
-        }
-        else {
-            $values["comm"] = getPostVar("comm");
-        }
 
-        if ($values["comm"] == "email" && !filter_var($values["email"], FILTER_VALIDATE_EMAIL)) {
-            $errors["email"] = "Vul alsjeblieft een geldig emailadres in.";
-        }
-
-        if ($values["comm"] == "phone" && empty($values["phone"])) {
-            $errors["phone"] = "Vul alsjeblieft een telefoonnummer in. ";
-        }
-        else if (!empty($values["phone"]) && !ctype_digit($values["phone"])) {
-            $errors["phone"] = "Vul alsjeblieft een telefoonnummer in met alleen cijfers.";
-        }
-
-        $street_flag = empty($values["street"]);
-        $housenumber_flag = empty($values["housenumber"]);
-        $postalcode_flag = empty($values["postalcode"]);
-        $municip_flag = empty($values["municip"]);
-        if ($values["comm"] == "post" || !$street_flag || !$housenumber_flag || !$postalcode_flag  || !$municip_flag) {
-            if ($street_flag) {
-                $errors["street"] = "Vul alsjeblieft je straatnaam in.";
-            }
-
-            if ($housenumber_flag) {
-                $errors["housenumber"] = "Vul alsjeblieft je huisnummer in.";
-            }
-
-            if ($postalcode_flag) {
-                $errors["postalcode"] = "Vul alsjeblieft je postcode in.";
-            }
-            else if (!preg_match('/^[0-9]{4}[A-Z]{2}$/', $values["postalcode"])) {
-                $errors["postalcode"] = "Vul alsjeblieft een geldige Nederlands postcode in."; 
-            }
-
-            if ($municip_flag) {
-                $errors["municip"] = "Vul alsjeblieft je gemeente in.";
-            }
-        }
+        $errors = checkContactComm($values, $errors);
 
         foreach($errors as $err_msg) {
             if (!empty($err_msg)) {
@@ -100,6 +47,77 @@ function validateContact() {
     return ['valid' => $valid, 'values' => $values, 'errors' => $errors];
 }
 
+function checkContactName($values, $errors) {
+    if (empty($values["name"])) {
+        $errors["name"] = "Vul alsjeblieft je volledige naam in.";
+    }
+    else if (!preg_match('/[a-zA-Z]/', $values["name"])) {  
+        $errors["name"] = "Vul alsjeblieft een naam in met minstens 1 letter.";
+    }
+
+    return $errors;
+}
+
+function checkContactGender($values, $errors) {
+    if (empty($values["gender"])) {
+        $errors["gender"] = "Vul alsjeblieft je aanhefvoorkeur in of geef aan dat je dit liever niet laat weten.";
+    }
+    else if (!array_key_exists($values['gender'], GENDERS)) {
+        $errors["gender"] = "Selecteer alsjeblieft een van de aanhefvoorkeuren.";
+    }
+
+    return $errors;
+}
+
+function checkContactComm($values, $errors) {
+    if (empty($values["comm"])) {
+        $errors["comm"] = "Vul alsjeblieft je communicatievoorkeur in.";
+    }
+
+
+    if ($values["comm"] == "email" && !filter_var($values["email"], FILTER_VALIDATE_EMAIL)) {
+        $errors["email"] = "Vul alsjeblieft een geldig emailadres in.";
+    }
+
+    if ($values["comm"] == "phone" && empty($values["phone"])) {
+        $errors["phone"] = "Vul alsjeblieft een telefoonnummer in. ";
+    }
+    else if (!empty($values["phone"]) && !ctype_digit($values["phone"])) {
+        $errors["phone"] = "Vul alsjeblieft een telefoonnummer in met alleen cijfers.";
+    }
+    
+    $errors = checkContactPost($values, $errors);
+    return $errors;
+}
+
+function checkContactPost($values, $errors) {
+    $street_flag = empty($values["street"]);
+    $housenumber_flag = empty($values["housenumber"]);
+    $postalcode_flag = empty($values["postalcode"]);
+    $municip_flag = empty($values["municip"]);
+    if ($values["comm"] == "post" || !$street_flag || !$housenumber_flag || !$postalcode_flag  || !$municip_flag) {
+        if ($street_flag) {
+            $errors["street"] = "Vul alsjeblieft je straatnaam in.";
+        }
+
+        if ($housenumber_flag) {
+            $errors["housenumber"] = "Vul alsjeblieft je huisnummer in.";
+        }
+
+        if ($postalcode_flag) {
+            $errors["postalcode"] = "Vul alsjeblieft je postcode in.";
+        }
+        else if (!preg_match('/^[0-9]{4}[A-Z]{2}$/', $values["postalcode"])) {
+            $errors["postalcode"] = "Vul alsjeblieft een geldige Nederlands postcode in."; 
+        }
+
+        if ($municip_flag) {
+            $errors["municip"] = "Vul alsjeblieft je gemeente in.";
+        }
+    }
+
+    return $errors;
+}
 
 
 function showContactContent ($data) {
