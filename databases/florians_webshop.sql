@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 16 apr 2024 om 15:26
+-- Gegenereerd op: 18 apr 2024 om 13:50
 -- Serverversie: 10.4.32-MariaDB
 -- PHP-versie: 8.2.12
 
@@ -20,6 +20,58 @@ SET time_zone = "+00:00";
 --
 -- Database: `florians_webshop`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` int(200) NOT NULL,
+  `user_id` int(200) NOT NULL,
+  `order_date` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Gegevens worden geëxporteerd voor tabel `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `order_date`) VALUES
+(1, 5, '2024-04-18'),
+(2, 5, '2024-04-18'),
+(3, 5, '2024-04-18'),
+(4, 5, '2024-04-18'),
+(5, 5, '2024-04-18'),
+(6, 5, '2024-04-18');
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `ordersproducts`
+--
+
+CREATE TABLE `ordersproducts` (
+  `id` int(200) NOT NULL,
+  `order_id` int(200) NOT NULL,
+  `product_id` int(200) NOT NULL,
+  `count` int(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Gegevens worden geëxporteerd voor tabel `ordersproducts`
+--
+
+INSERT INTO `ordersproducts` (`id`, `order_id`, `product_id`, `count`) VALUES
+(1, 1, 1, 2),
+(2, 1, 2, 1),
+(3, 3, 2, 1),
+(4, 4, 3, 1),
+(5, 5, 1, 2),
+(6, 5, 4, 1),
+(7, 5, 5, 2),
+(8, 6, 4, 1),
+(9, 6, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -53,9 +105,9 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `fname`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `id` int(200) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `user` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
   `pswd` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -63,7 +115,7 @@ CREATE TABLE `users` (
 -- Gegevens worden geëxporteerd voor tabel `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `user`, `pswd`) VALUES
+INSERT INTO `users` (`id`, `email`, `name`, `pswd`) VALUES
 (1, 'johndoe@mail.com', 'johndoe', 'johniscool'),
 (2, 'johnfoo@mail.com', 'johnfoo', 'fooiscool'),
 (3, 'notsogreat@gmail.com', 'veryungreat', 'secretlygreat'),
@@ -73,6 +125,21 @@ INSERT INTO `users` (`id`, `email`, `user`, `pswd`) VALUES
 --
 -- Indexen voor geëxporteerde tabellen
 --
+
+--
+-- Indexen voor tabel `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user-orders` (`user_id`);
+
+--
+-- Indexen voor tabel `ordersproducts`
+--
+ALTER TABLE `ordersproducts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `orders-orders` (`order_id`),
+  ADD KEY `products-products` (`product_id`);
 
 --
 -- Indexen voor tabel `products`
@@ -91,6 +158,18 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT voor een tabel `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `id` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT voor een tabel `ordersproducts`
+--
+ALTER TABLE `ordersproducts`
+  MODIFY `id` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT voor een tabel `products`
 --
 ALTER TABLE `products`
@@ -100,7 +179,24 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT voor een tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Beperkingen voor geëxporteerde tabellen
+--
+
+--
+-- Beperkingen voor tabel `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `user-orders` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Beperkingen voor tabel `ordersproducts`
+--
+ALTER TABLE `ordersproducts`
+  ADD CONSTRAINT `orders-orders` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `products-products` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
