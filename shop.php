@@ -6,7 +6,11 @@ function getShopTitle() {
 
 function showShopContent($data) {
     include_once('communication.php');
-    if (empty($data["productId"])) {
+
+    if (empty($data["products"])) {
+        echo "";
+    }
+    else if (empty($data["productId"])) {
         showWebshopProducts($data);
     }
     else {

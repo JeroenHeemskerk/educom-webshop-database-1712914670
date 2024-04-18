@@ -42,7 +42,7 @@ function validateLogin() {
              }
         } 
         catch (Exception $e) {
-            $error["general"] = "Er is een technische storing, u kunt niet inloggen. Probeer het later nogmaals.";
+            $errors["general"] = "Er is een technische storing, u kunt niet inloggen. Probeer het later nogmaals.";
             logError('Authentication failed for user ' . $values['email'] . ', SQLError: ' . $e -> getMessage());
         }
 

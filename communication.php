@@ -29,7 +29,7 @@ function addAccount($credentials) {
     $conn = makeDataBaseConnection(); 
     try {
         $email = mysqli_real_escape_string($conn, $credentials["email"]);
-        $query = "INSERT INTO users (email, user, pswd) VALUES ('" . $email . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');"; 
+        $query = "INSERT INtO users (email, user, pswd) VALUES ('" . $email . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');"; 
   
         executeDataBaseQuery($query, $conn);
     } 
@@ -55,6 +55,7 @@ function getUserDataByEmail($email) {
     }
 }
 
+// getest met foute sql query
 function doesEmailExist($email) { 
     return !empty(getUserDataByEmail($email));
 }
@@ -69,6 +70,7 @@ function getUserByEmail($email) {
     return $user["user"]; 
 }
 
+// getest met foute sql query
 define('RESULT_OK', 0);
 define('RESULT_UNKNOWN_USER', -1);
 define('RESULT_WRONG_PASSWORD', -2); 
@@ -79,6 +81,7 @@ function authenticateUser($email, $pswd) {
         return ['result' => RESULT_EMPTY_EMAIL];
     }
 
+    // deze wordt gecatched in validateLogin()
     $user = getUserDataByEmail($email);
     if (empty($user)) {
         return ['result' => RESULT_UNKNOWN_USER]; 
@@ -95,6 +98,7 @@ function authenticateUser($email, $pswd) {
     return ['result' => RESULT_OK, 'user' => $user]; 
 } 
 
+// getest met foute sql query
 function getProductsByIDs($ids) {
     $conn = makeDataBaseConnection();
 
@@ -114,6 +118,7 @@ function getProductsByIDs($ids) {
 
 }
 
+// getest met foute sql query
 function getProducts() {
     $conn = makeDataBaseConnection();
 

@@ -72,8 +72,16 @@ function processPage($page) {
             include_once('register.php');
             $data = validateRegister();
             if ($data["valid"]) {
-                addAccount($data["values"]);
-                $data["page"] = "home";
+                try {
+                    addAccount($data["values"]);
+                    $data["page"] = "home";
+                }
+                catch (Exception $e) {
+                    $data["errors"] = array();
+                    $data["errors"]["general"] = "Er is een technische storing, u kunt niet registreren. Probeer het later nogmaals.";
+                    logError('Registration failed for user ' . $data["values"]['email'] . ', SQLError: ' . $e -> getMessage());
+                    $data["page"] = $page;
+                }                
             }
             else {
                 $data["page"] = $page;
@@ -84,7 +92,15 @@ function processPage($page) {
             // voor iedere webshop pagina vraag ik nu alle producten op
             // daar ben ik nog niet heel tevreden over
             include_once('communication.php');
-            $data = getProducts();
+            try {
+                $data = getProducts();
+            }
+            catch (Exception $e) {
+                $errors["general"] = "Er is een technische storing, de website kan niet worden geladen. Probeer het later nogmaals.";
+                logError('Shop load failed SQLError: ' . $e -> getMessage());
+                $data = ["errors" => $errors];
+            }
+
             $data["productId"] = getGetVar("detail", 0);
             $data["page"] = $page;
             return $data;
@@ -92,13 +108,23 @@ function processPage($page) {
         case "cart":
             $action = getPostVar('action');
             $id = getPostVar('productId');
+            include_once('cart.php');
             if (empty($action) || empty($id)) {
-                return ["page"=>$page];
+                try {
+                    $data = getCartProducts();
+                    $data["page"] = $page;
+                }
+
+                catch (Exception $e) {
+                    $data["errors"] = array();
+                    $data["errors"]["general"] = "Er is een technische storing, u kunt uw winkelmand niet inzien. Probeer het later nogmaals.";
+                    logError('Failed cart load SQLError: ' . $e -> getMessage());
+                    $data["page"] = "home";
+                }
+                return $data;
             }
-            else {
-                include_once('cart.php');
-                return handleCartAction($action, $id);
-            }
+            return handleCartAction($action, $id);
+
         default:
             return ["page"=>$page];
     }
@@ -109,7 +135,7 @@ function buildMenu() {
     include_once('session_manager.php');
     if (isUserLoggedIn()) {
         $menu["cart"] = 'CART';
-        $menu["logout"] = 'LOGOUT ' . getLoggedInUser();
+        $menu["logout"] = 'LOGOUT ' . getLoggedInUserName();
     } 
     else {
         $menu["register"] = "REGISTER";
@@ -235,7 +261,7 @@ function showContent($data) {
 
         case "cart":
             include_once('cart.php');
-            showCartContent();
+            showCartContent($data);
             break;
 
         default:

@@ -25,11 +25,11 @@ function doLogoutUser() {
     session_unset();
     session_destroy();
 }
-
-function getLoggedInUser() { // JH: Rename to getLoggedInUserName? 
-    return getSessionVar('userName');
-}
  
+function getLoggedInEmail() {
+    return getSessionVar('email');
+}
+
 function getLoggedInUserName() { 
     return getSessionVar('userName');
 }

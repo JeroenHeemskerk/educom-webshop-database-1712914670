@@ -5,7 +5,7 @@ function getCartTitle() {
 }
 
 function getCartProducts() {
-    include_once('communication.php');
+    include_once('session_manager.php');
     $cart = getCart();
     $cartIds = array_keys($cart);
     $total = 0.0;
@@ -13,6 +13,7 @@ function getCartProducts() {
         return array("products"=>array(), "total"=>$total);
     }
 
+    include_once('communication.php');
     $products = getProductsByIDs($cartIds);
     $cartProducts = array();
     foreach($cart as $productId => $count) {
@@ -30,17 +31,26 @@ function getCartProducts() {
 
 function handleCartAction($action, $id) {
     // returns the page to redirect to
+    include_once('session_manager.php');
     include_once('communication.php');
+    $errors = array();
     switch ($action) {
         case "addToCart":
             addToCart($id);
-            return ["products"=>getProducts()["products"], "page"=>"shop", "productId"=>$id];
+            try {
+                $products = getProducts()["products"];
+            }
+            catch (Exception $e) {
+                $errors["general"] = "Er is een technische storing, de winkelmand werkt momenteel niet. Probeer het later nogmaals.";
+                logError('Cart action failed for ' . getLoggedInEmail() . ', SQLError: ' . $e -> getMessage());
+                $products = array();
+            }
+            return ["products"=>$products, "page"=>"shop", "productId"=>$id, "errors"=>$errors];
 
         case "purchase":
             addPurchase();
             emptyCart();
             break;
-
     }
 }
 
@@ -54,12 +64,13 @@ function showActionButton($action, $page, $buttonId, $buttonText, $productId=NUL
 }
 
 
-function showCartContent() {
+function showCartContent($data) {
     echo '<h2>Winkelmandje</h2>';
 
     include_once('communication.php');
-    $products = getCartProducts();
-    foreach($products["products"] as $product) {
+
+    $products = $data["products"];
+    foreach($products as $product) {
         echo '<a class="cart-list" href="index.php?page=shop&detail=' . $product["id"] . '">';
         echo '<div>';
         echo '<img src=Images/' . $product["fname"] . '>';
@@ -68,7 +79,8 @@ function showCartContent() {
         echo '</p>';
         echo '</div></a>';
     }
-    echo '<p id="total-cart">Totaal: &euro;' . $products["total"] . ',-</p>';
+    echo '<p id="total-cart">Totaal: &euro;' . $data["total"] . ',-</p>';
     showActionButton("addPurchase", "cart", "purchaseButton", "Afrekenen");
 }
+
 

@@ -7,7 +7,7 @@ function getRegisterTitle() {
 function validateRegister() {
     $valid = false;
     $errors = array("user"=>"", "email"=>"", "pswd"=>"", 
-    "pswd2"=>"", );
+    "pswd2"=>"", "general"=>"");
 
     $values = array("user"=>"", "email"=>"", "pswd"=>"", "pswd2"=>"");
 
@@ -19,9 +19,17 @@ function validateRegister() {
 
         $errors = checkRegisterEmpty($values, $errors);
         include_once('communication.php');
-        if (doesEmailExist($values["email"])) {
-            $errors["email"] = "Dit emailadres heeft al een account op deze website.";
+
+        try {
+            if (doesEmailExist($values["email"])) {
+                $errors["email"] = "Dit emailadres heeft al een account op deze website.";
+            }
         }
+        catch (Exception $e) {
+            $errors["general"] = "Er is een technische storing, u kunt niet inloggen. Probeer het later nogmaals.";
+            logError('Email lookup failed for ' . $values['email'] . ', SQLError: ' . $e -> getMessage());
+        }
+
 
         if (!filter_var($values["email"], FILTER_VALIDATE_EMAIL)) {
             $errors["email"] = "Vul alsjeblieft een geldig emailadres in.";
