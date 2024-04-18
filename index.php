@@ -89,19 +89,24 @@ function processPage($page) {
             return $data;
 
         case "shop":
-            // voor iedere webshop pagina vraag ik nu alle producten op
-            // daar ben ik nog niet heel tevreden over
+            $productId = getGetVar("detail", 0); 
             include_once('communication.php');
-            try {
-                $data = getProducts();
+            if (!$productId) {
+                try {
+                    $data = getProducts();
+                    $data["page"] = $page;
+                }
+                catch (Exception $e) {
+                    $errors["general"] = "Er is een technische storing, de website kan niet worden geladen. Probeer het later nogmaals.";
+                    logError('Shop load failed SQLError: ' . $e -> getMessage());
+                    $data = ["errors" => $errors];
+                }
             }
-            catch (Exception $e) {
-                $errors["general"] = "Er is een technische storing, de website kan niet worden geladen. Probeer het later nogmaals.";
-                logError('Shop load failed SQLError: ' . $e -> getMessage());
-                $data = ["errors" => $errors];
+            else {
+                $data = getProductsByIDs([$productId]);
+                $data["productId"] = $productId;
             }
 
-            $data["productId"] = getGetVar("detail", 0);
             $data["page"] = $page;
             return $data;
 
@@ -109,6 +114,7 @@ function processPage($page) {
             $action = getPostVar('action');
             $id = getPostVar('productId');
             include_once('cart.php');
+            // some cart actions don't require an id
             if (empty($action)) {
                 try {
                     $data = getCartProducts();

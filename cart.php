@@ -10,14 +10,14 @@ function getCartProducts() {
     $cartIds = array_keys($cart);
     $total = 0.0;
     if (empty($cartIds)) {
-        return array("products"=>array(), "total"=>$total);
+        return ["products"=>array(), "total"=>$total];
     }
 
     include_once('communication.php');
-    $products = getProductsByIDs($cartIds);
+    $products = getProductsByIDs($cartIds)["products"];
     $cartProducts = array();
     foreach($cart as $productId => $count) {
-        // ik filter twee keer op id, maar simultaan loopen is te veel gedoe
+        // second filter on id, but looping simultaneously is too much of a hassle
         $product = $products[$productId];
         $cartProducts[$productId] = array("id"=>$productId, "count"=>$count, "name"=>$product['name'], "description"=>$product['description'], "fname"=>$product['fname'], "price"=>$product['price']);
         
@@ -38,7 +38,7 @@ function handleCartAction($action, $id) {
         case "addToCart":
             addToCart($id);
             try {
-                $products = getProducts()["products"];
+                $products = getProductsByIDs([$id])["products"];
             }
             catch (Exception $e) {
                 $errors["general"] = "Er is een technische storing, de winkelmand werkt momenteel niet. Probeer het later nogmaals.";
@@ -48,17 +48,16 @@ function handleCartAction($action, $id) {
             return ["products"=>$products, "page"=>"shop", "productId"=>$id, "errors"=>$errors];
 
         case "purchase":
+            $errors = array();
             try {
                 addOrder();
                 emptyCart();
-                return ["products"=>array(), "total"=>0.0, "page"=>"cart"];
             }
             catch (Exception $e) {
-                $errors = array();
                 $errors["general"] = "Er is een technische storing, u kunt momenteel niet afrekenen. Probeer het later nogmaals.";
                 logError('Purchase failed for ' . getLoggedInEmail() . ', SQLError: ' . $e -> getMessage());
-                return ["products"=>array(), "total"=>0.0, "page"=>"cart", "errors"=>$errors];
             }
+            return ["products"=>array(), "total"=>0.0, "page"=>"cart", "errors"=>$errors];
     }
 }
 
@@ -75,8 +74,6 @@ function showActionButton($action, $page, $buttonId, $buttonText, $productId=NUL
 function showCartContent($data) {
     echo '<h2>Winkelmandje</h2>';
 
-    include_once('communication.php');
-
     $products = $data["products"];
     foreach($products as $product) {
         echo '<a class="cart-list" href="index.php?page=shop&detail=' . $product["id"] . '">';
@@ -88,7 +85,10 @@ function showCartContent($data) {
         echo '</div></a>';
     }
     echo '<p id="total-cart">Totaal: &euro;' . $data["total"] . ',-</p>';
-    showActionButton("purchase", "cart", "purchaseButton", "Afrekenen");
+    include_once('session_manager.php');
+    if (!empty(getCart())) {
+        showActionButton("purchase", "cart", "purchaseButton", "Afrekenen");
+    }
 }
 
 

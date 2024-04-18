@@ -110,7 +110,7 @@ function getProductsByIDs($ids) {
         while($row = mysqli_fetch_assoc($result)) {
             $products[$row["id"]] = array("id"=> $row["id"], "name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
         }
-        return $products;
+        return ["products"=>$products];
     }
     finally {
         mysqli_close($conn);
