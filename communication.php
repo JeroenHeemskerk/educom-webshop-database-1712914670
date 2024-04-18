@@ -140,12 +140,32 @@ function getProducts() {
 
 }
 
-function addPurchase() {
+function addOrder() {
     $conn = makeDataBaseConnection();
 
+    include_once('session_manager.php');
     // eerst order toevoegen aan orders tabel
+    try {
+        // default van datum is de huidige datum
+        $query = "INSERT INTO orders (user_id) VALUES (" . getLoggedInUserId() . ");";
 
-    
+        executeDataBaseQuery($query, $conn);
+
+        $cart = getCart();
+        $query = "INSERT INTO ordersproducts (order_id, product_id, count) VALUES ";
+        foreach($cart as $productId=>$count) {
+            // werkt mysql_insert_id als er heel veel aanvragen tegelijkertijd binnenkomen?
+            $query .= "('" . mysqli_insert_id($conn) . "','" . $productId . "','" . $count . "'),";
+
+        }
+        // vervang komma door puntkomma
+        $query[strlen($query)-1] = ";";
+        executeDataBaseQuery($query, $conn);
+
+    }
+    finally {
+        mysqli_close($conn);
+    }
 
     // $products = getCartProducts();
     // $cartCounts = getCartCounts();

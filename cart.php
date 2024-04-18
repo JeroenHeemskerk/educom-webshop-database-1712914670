@@ -48,9 +48,17 @@ function handleCartAction($action, $id) {
             return ["products"=>$products, "page"=>"shop", "productId"=>$id, "errors"=>$errors];
 
         case "purchase":
-            addPurchase();
-            emptyCart();
-            break;
+            try {
+                addOrder();
+                emptyCart();
+                return ["products"=>array(), "total"=>0.0, "page"=>"cart"];
+            }
+            catch (Exception $e) {
+                $errors = array();
+                $errors["general"] = "Er is een technische storing, u kunt momenteel niet afrekenen. Probeer het later nogmaals.";
+                logError('Purchase failed for ' . getLoggedInEmail() . ', SQLError: ' . $e -> getMessage());
+                return ["products"=>array(), "total"=>0.0, "page"=>"cart", "errors"=>$errors];
+            }
     }
 }
 
@@ -58,7 +66,7 @@ function showActionButton($action, $page, $buttonId, $buttonText, $productId=NUL
     echo '<form action="' . htmlspecialchars($_SERVER['PHP_SELF']) . '" method="POST">
     <input type="hidden" name="productId" value="' . $productId . '">
     <input type="hidden" name="action" value="' . $action . '">';
-    if (!empty($productId)) {echo '<input type="hidden" name="page" value="' . $page . '">';}
+    echo '<input type="hidden" name="page" value="' . $page . '">';
     echo '<input id="' . $buttonId . '" type="submit" value="' . $buttonText . '">
 </form>';
 }
@@ -80,7 +88,7 @@ function showCartContent($data) {
         echo '</div></a>';
     }
     echo '<p id="total-cart">Totaal: &euro;' . $data["total"] . ',-</p>';
-    showActionButton("addPurchase", "cart", "purchaseButton", "Afrekenen");
+    showActionButton("purchase", "cart", "purchaseButton", "Afrekenen");
 }
 
 

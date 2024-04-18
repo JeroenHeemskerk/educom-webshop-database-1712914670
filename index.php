@@ -109,7 +109,7 @@ function processPage($page) {
             $action = getPostVar('action');
             $id = getPostVar('productId');
             include_once('cart.php');
-            if (empty($action) || empty($id)) {
+            if (empty($action)) {
                 try {
                     $data = getCartProducts();
                     $data["page"] = $page;
@@ -123,6 +123,7 @@ function processPage($page) {
                 }
                 return $data;
             }
+
             return handleCartAction($action, $id);
 
         default:
