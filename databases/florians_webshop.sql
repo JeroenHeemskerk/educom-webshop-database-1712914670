@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 18 apr 2024 om 13:50
+-- Gegenereerd op: 18 apr 2024 om 17:20
 -- Serverversie: 10.4.32-MariaDB
 -- PHP-versie: 8.2.12
 
@@ -33,18 +33,6 @@ CREATE TABLE `orders` (
   `order_date` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Gegevens worden geëxporteerd voor tabel `orders`
---
-
-INSERT INTO `orders` (`id`, `user_id`, `order_date`) VALUES
-(1, 5, '2024-04-18'),
-(2, 5, '2024-04-18'),
-(3, 5, '2024-04-18'),
-(4, 5, '2024-04-18'),
-(5, 5, '2024-04-18'),
-(6, 5, '2024-04-18');
-
 -- --------------------------------------------------------
 
 --
@@ -57,21 +45,6 @@ CREATE TABLE `ordersproducts` (
   `product_id` int(200) NOT NULL,
   `count` int(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Gegevens worden geëxporteerd voor tabel `ordersproducts`
---
-
-INSERT INTO `ordersproducts` (`id`, `order_id`, `product_id`, `count`) VALUES
-(1, 1, 1, 2),
-(2, 1, 2, 1),
-(3, 3, 2, 1),
-(4, 4, 3, 1),
-(5, 5, 1, 2),
-(6, 5, 4, 1),
-(7, 5, 5, 2),
-(8, 6, 4, 1),
-(9, 6, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -116,11 +89,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `name`, `pswd`) VALUES
-(1, 'johndoe@mail.com', 'johndoe', 'johniscool'),
-(2, 'johnfoo@mail.com', 'johnfoo', 'fooiscool'),
-(3, 'notsogreat@gmail.com', 'veryungreat', 'secretlygreat'),
-(4, 'sofun@mail.com', 'gettingfun', 'sofun'),
-(5, 'ja@ja.nl', 'ja', 'ja');
+(6, 'nee@nee.nl', 'nee', '$2y$10$AVgE8NNwlQYiERX.QABU.uaRDJeExurIKoLY.LQcDiJXKRIm8dP96'),
+(7, 'ja@ja.nl', 'ja', '$2y$10$OAWsH9KV/rMGuttGl7BN/eS9ROgNsXu.bkXZk/4VwZ8Cd0xGwm6YW'),
+(8, 'ok@ok.nl', 'ok', '$2y$10$NxjLPL.2bHOeYUhCvTy6VekNue2nW7/7VFPgGK/1jCJ59t54J7mCi');
 
 --
 -- Indexen voor geëxporteerde tabellen
@@ -131,15 +102,15 @@ INSERT INTO `users` (`id`, `email`, `name`, `pswd`) VALUES
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user-orders` (`user_id`);
+  ADD KEY `userplacesorders` (`user_id`);
 
 --
 -- Indexen voor tabel `ordersproducts`
 --
 ALTER TABLE `ordersproducts`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `orders-orders` (`order_id`),
-  ADD KEY `products-products` (`product_id`);
+  ADD KEY `orderhasproducts` (`product_id`),
+  ADD KEY `orderhasorders` (`order_id`);
 
 --
 -- Indexen voor tabel `products`
@@ -179,7 +150,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT voor een tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Beperkingen voor geëxporteerde tabellen
@@ -189,14 +160,14 @@ ALTER TABLE `users`
 -- Beperkingen voor tabel `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `user-orders` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `userplacesorders` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Beperkingen voor tabel `ordersproducts`
 --
 ALTER TABLE `ordersproducts`
-  ADD CONSTRAINT `orders-orders` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `products-products` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+  ADD CONSTRAINT `orderhasorders` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `orderhasproducts` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
