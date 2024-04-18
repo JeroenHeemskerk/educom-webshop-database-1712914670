@@ -70,7 +70,6 @@ function checkRegisterEmpty($values, $errors) {
     }
 
     return $errors;
-
 }
 
 function showRegisterContent($data) {

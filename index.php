@@ -68,6 +68,24 @@ function processPage($page) {
             doLogoutUser();
             return ["page"=>"home"];
 
+        case "changepswd":
+            include_once('changepswd.php');
+            try {
+                $data = validateChangePswd();
+            }
+            catch (Exception $e) {
+                $data = ["valid"=>false, "errors"=>""];
+                $data["errors"]["general"] = "Er is een technische storing, u kunt niet uw wachtwoord wijzigen. Probeer het later nogmaals.";
+                logError('Password change failed for user ' . getLoggedInEmail() . ', SQLError: ' . $e -> getMessage());
+            }
+            if ($data["valid"]) {
+                $data["page"] ="home";
+            }
+            else {
+                $data["page"] = $page;
+            }
+            return $data;
+
         case "register":
             include_once('register.php');
             $data = validateRegister();
@@ -142,6 +160,7 @@ function buildMenu() {
     include_once('session_manager.php');
     if (isUserLoggedIn()) {
         $menu["cart"] = 'CART';
+        $menu["changepswd"] = "CHANGE PASSWORD";
         $menu["logout"] = 'LOGOUT ' . getLoggedInUserName();
     } 
     else {
@@ -190,6 +209,9 @@ function showTitle($page) {
         case "cart":
             include_once('cart.php');
             return getCartTitle();
+        case "changepswd":
+            include_once('changepswd.php');
+            return getChangePswdTitle();
 
         default:
             include_once('error404.php');
@@ -235,40 +257,37 @@ function showContent($data) {
             include_once('about.php');
             showAboutContent();
             break;
-
         case "contact":
             include_once('contact.php');
             showContactContent($data);
             break;
-        
         case "thanks":
             include_once('contact.php');
             showContactThanks($data);
             break;
-
         case "home":
             include_once('home.php');
             showHomeContent();
             break;
-
         case "register":
             include_once('register.php');
             showRegisterContent($data);
             break;
-
         case "login":
             include_once('login.php');
             showLoginContent($data);
             break;
-
         case "shop":
             include_once('shop.php');
             showShopContent($data);
             break;
-
         case "cart":
             include_once('cart.php');
             showCartContent($data);
+            break;
+        case "changepswd":
+            include_once('changepswd.php');
+            showChangePswd($data);
             break;
 
         default:

@@ -1,5 +1,13 @@
 <?php 
 
+define('RESULT_OK', 0);
+define('RESULT_UNKNOWN_USER', -1);
+define('RESULT_WRONG_PSWD', -2); 
+define('RESULT_EMPTY_EMAIL', -3);
+define('RESULT_EMPTY_PSWD', -4);
+define('RESULT_EMPTY_NEWPSWD', -5);
+define('RESULT_WRONG_NEWPSWD', -6);
+define('RESULT_NO_PSWDCHANGE', -7);
 
 function makeDataBaseConnection() {
     $servername = getenv("MYSQL_FLORIAN_WEBSHOP_HOST"); 
@@ -39,6 +47,43 @@ function addAccount($credentials) {
     } 
 } 
 
+function authenticateNewPswd($values) {
+    if (empty($values["pswdOld"])) {
+        return ["result" => RESULT_EMPTY_PSWD];
+    }
+
+    if (empty($values["pswdNew"]) || empty($values["pswdNew2"])) {
+        return ["result" => RESULT_EMPTY_NEWPSWD];
+    }
+
+    if ($values["pswdNew"] != $values["pswdNew2"]) {
+        return ["result" => RESULT_WRONG_NEWPSWD];
+    }
+
+    // caught in validateChangePswd()
+    $user = getUserDataByEmail($values["email"]);
+    if (!password_verify($values["pswdOld"], $user["pswd"])) {
+        return ["result" => RESULT_WRONG_PSWD];
+    }
+
+    if (password_verify($values["pswdNew"], $user["pswd"])) {
+        return ["result" => RESULT_NO_PSWDCHANGE];
+    }
+
+    try {
+        $conn = makeDataBaseConnection();
+        
+        $query = "UPDATE users SET pswd = '" . password_hash($values["pswdNew"], PASSWORD_DEFAULT, [14]) . "' WHERE id = " . $user["id"] . ";";
+
+        executeDataBaseQuery($query, $conn);
+        return ['result' => RESULT_OK, 'user' => $user];
+
+    }
+    finally {
+        mysqli_close($conn); 
+    }
+}
+
 function getUserDataByEmail($email) {
     $conn = makeDataBaseConnection();
 
@@ -56,7 +101,6 @@ function getUserDataByEmail($email) {
     }
 }
 
-// getest met foute sql query
 function doesEmailExist($email) { 
     return !empty(getUserDataByEmail($email));
 }
@@ -71,35 +115,29 @@ function getUserByEmail($email) {
     return $user["user"]; 
 }
 
-// getest met foute sql query
-define('RESULT_OK', 0);
-define('RESULT_UNKNOWN_USER', -1);
-define('RESULT_WRONG_PASSWORD', -2); 
-define('RESULT_EMPTY_EMAIL', -3);
-define('RESULT_EMPTY_PSWD', -4);
+
 function authenticateUser($email, $pswd) { 
     if (empty($email)) {
         return ['result' => RESULT_EMPTY_EMAIL];
     }
 
-    // deze wordt gecatched in validateLogin()
+    if(empty($pswd)) {
+        return ['result' => RESULT_EMPTY_PSWD];
+    }
+
+    // caught in validateLogin()
     $user = getUserDataByEmail($email);
     if (empty($user)) {
         return ['result' => RESULT_UNKNOWN_USER]; 
     } 
-    
-    if(empty($pswd)) {
-        return ['result' => RESULT_EMPTY_PSWD];
-    }
- 
+
     if (!password_verify($pswd, $user["pswd"])) { 
-        return ['result' => RESULT_WRONG_PASSWORD]; 
+        return ['result' => RESULT_WRONG_PSWD]; 
     } 
     
     return ['result' => RESULT_OK, 'user' => $user]; 
 } 
 
-// getest met foute sql query
 function getProductsByIDs($ids) {
     $conn = makeDataBaseConnection();
 
@@ -119,7 +157,6 @@ function getProductsByIDs($ids) {
 
 }
 
-// getest met foute sql query
 function getProducts() {
     $conn = makeDataBaseConnection();
 
@@ -145,9 +182,8 @@ function addOrder() {
     $conn = makeDataBaseConnection();
 
     include_once('session_manager.php');
-    // eerst order toevoegen aan orders tabel
     try {
-        // default van datum is de huidige datum
+        // default of date col is current date
         $query = "INSERT INTO orders (user_id) VALUES (" . getLoggedInUserId() . ");";
 
         executeDataBaseQuery($query, $conn);
@@ -159,7 +195,7 @@ function addOrder() {
             $query .= "('" . mysqli_insert_id($conn) . "','" . $productId . "','" . $count . "'),";
 
         }
-        // vervang komma door puntkomma
+        // replace , with ;
         $query[strlen($query)-1] = ";";
         executeDataBaseQuery($query, $conn);
 

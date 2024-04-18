@@ -31,9 +31,9 @@ function validateLogin() {
                     $errors["pswd"] = "Vul alsjeblieft je wachtwoord in."; 
                     break;
            
-                case RESULT_WRONG_PASSWORD:
+                case RESULT_WRONG_PSWD:
                     $errors["pswd"] = "Wachtwoord onjuist."; 
-                    break;
+                    break; 
            
                 case RESULT_OK:
                     $values['userName'] = $authResult['user']['name'];
