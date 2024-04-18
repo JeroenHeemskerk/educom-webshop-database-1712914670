@@ -29,7 +29,8 @@ function addAccount($credentials) {
     $conn = makeDataBaseConnection(); 
     try {
         $email = mysqli_real_escape_string($conn, $credentials["email"]);
-        $query = "INSERT INtO users (email, user, pswd) VALUES ('" . $email . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');"; 
+        $pswd = password_hash($credentials["pswd"], PASSWORD_DEFAULT, [14]);
+        $query = "INSERT INTO users (email, name, pswd) VALUES ('" . $email . "','" . $credentials["user"] . "','" . $pswd . "');"; 
   
         executeDataBaseQuery($query, $conn);
     } 
@@ -91,7 +92,7 @@ function authenticateUser($email, $pswd) {
         return ['result' => RESULT_EMPTY_PSWD];
     }
  
-    if ($user["pswd"] != $pswd) { /* JH: Ik heb deze 'if' omgedraaid omdat het beter leest om eerst alle fouten af te handelen */
+    if (!password_verify($pswd, $user["pswd"])) { 
         return ['result' => RESULT_WRONG_PASSWORD]; 
     } 
     
@@ -166,9 +167,4 @@ function addOrder() {
     finally {
         mysqli_close($conn);
     }
-
-    // $products = getCartProducts();
-    // $cartCounts = getCartCounts();
-
-    // $query = "INSERT INTO ordersProducts (order_id, product_id, count) VALUES ('" . $credentials["email"] . "','" . $credentials["user"] . "','" . $credentials["pswd"] . "');";";
 }
