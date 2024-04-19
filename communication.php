@@ -204,3 +204,30 @@ function addOrder() {
         mysqli_close($conn);
     }
 }
+
+function getTopKProducts($k) {
+    $conn = makeDataBaseConnection();
+
+    try {
+        $query = "SELECT p.*, SUM(op.count) as total_sold FROM ordersproducts as op
+        RIGHT JOIN products as p ON op.product_id = p.id
+        LEFT JOIN orders as o ON op.order_id = o.id
+        WHERE o.order_date > DATE_SUB(date(CURRENT_DATE), INTERVAL 7 DAY) or o.order_date IS NULL
+        GROUP BY p.id
+        ORDER BY total_sold DESC
+        LIMIT " . $k . ";";
+
+        $result = executeDataBaseQuery($query, $conn);
+
+        while($row = mysqli_fetch_assoc($result)) {
+            $products[$row["id"]] = array("id"=> $row["id"], "name"=>$row["name"], "description"=>$row["description"], "price"=>$row["price"], "fname"=>$row["fname"]);
+        }
+    
+        return ["products" => $products];
+    }
+    finally {
+        mysqli_close($conn);
+    }
+
+
+}

@@ -108,23 +108,41 @@ function processPage($page) {
 
         case "shop":
             $productId = getGetVar("detail", 0); 
+            $top = getGetVar("top");
             include_once('communication.php');
-            if (!$productId) {
+            if (!$productId && !$top) {
                 try {
                     $data = getProducts();
                     $data["page"] = $page;
                 }
                 catch (Exception $e) {
-                    $errors["general"] = "Er is een technische storing, de website kan niet worden geladen. Probeer het later nogmaals.";
+                    $errors["general"] = "Er is een technische storing, de webshop kan niet worden geladen. Probeer het later nogmaals.";
+                    logError('Shop load failed SQLError: ' . $e -> getMessage());
+                    $data = ["errors" => $errors];
+                }
+            }
+            else if ($top) {
+                try {
+                    $data = getTopKProducts($top);
+                }
+                catch (Exception $e) {
+                    $errors["general"] = "Er is een technische storing, de webshop kan niet worden geladen. Probeer het later nogmaals.";
                     logError('Shop load failed SQLError: ' . $e -> getMessage());
                     $data = ["errors" => $errors];
                 }
             }
             else {
-                $data = getProductsByIDs([$productId]);
-                $data["productId"] = $productId;
+                // TODO: catch SQL fout
+                try {
+                    $data = getProductsByIDs([$productId]);
+                    $data["productId"] = $productId;
+                }
+                catch (Exception $e) {
+                    $errors["general"] = "Er is een technische storing, de webshop kan niet worden geladen. Probeer het later nogmaals.";
+                    logError('Shop item load failed for ' . $productId . ' SQLError: ' . $e -> getMessage());
+                    $data = ["errors" => $errors];
+                }
             }
-
             $data["page"] = $page;
             return $data;
 
@@ -156,11 +174,11 @@ function processPage($page) {
 }
 
 function buildMenu() {
-    $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT", "shop"=>"WEBSHOP");
+    $menu = array("home"=>"HOME", "about"=>"ABOUT", "contact"=>"CONTACT", "shop"=>"WEBSHOP", "shop&top=5"=>"TOP 5");
     include_once('session_manager.php');
     if (isUserLoggedIn()) {
         $menu["cart"] = 'CART';
-        $menu["changepswd"] = "CHANGE PASSWORD";
+        $menu["changepswd"] = "ACCOUNT";
         $menu["logout"] = 'LOGOUT ' . getLoggedInUserName();
     } 
     else {
